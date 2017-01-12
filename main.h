@@ -44,7 +44,6 @@ enum GameState { MAIN_MENU, LEVEL1, MULTIPLAYER, OPTIONS, QUIT };
 void menuSelect(int);
 extern short menuSelector;
 
-
 //The window we'll be rendering to
 extern SDL_Window* gWindow;
 

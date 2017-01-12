@@ -10,16 +10,12 @@ struct UDPConnection
 	~UDPConnection( )
 	{
 		SDLNet_FreePacket(packet);
-		SDLNet_Quit();
+		// SDLNet_Quit(); // do I want to quit sdlnet here?
 	}
 	bool Init( const std::string &ip, int32_t remotePort, int32_t localPort )
 	{
 		std::cout << "Connecting to \n\tIP : " << ip << "\n\tPort : " << remotePort << std::endl;
 		std::cout << "Local port : " << localPort << "\n\n";
-
-		// Initialize SDL_net
-		if ( !InitSDL_Net() )
-			return false;
 
 		if ( !OpenPort( localPort  ) )
 			return false;
@@ -32,19 +28,7 @@ struct UDPConnection
 
 		return true;
 	}
-	bool InitSDL_Net()
-	{
-		std::cout << "Initializing SDL_net...\n";
 
-		if ( SDLNet_Init() == -1 )
-		{
-			std::cout << "\tSDLNet_Init failed : " << SDLNet_GetError() << std::endl;
-			return false;
-		}
-
-		std::cout << "\tSuccess!\n\n";
-		return true;
-	}
 	bool CreatePacket( int32_t packetSize )
 	{
 		std::cout << "Creating packet with size " << packetSize << "...\n";
@@ -63,7 +47,6 @@ struct UDPConnection
 		packet->address.host = serverIP.host;
 		packet->address.port = serverIP.port;
 
-		std::cout << "\tSuccess!\n\n";
 		return true;
 	}
 	bool OpenPort( int32_t port )
@@ -78,8 +61,6 @@ struct UDPConnection
 			std::cout << "\tSDLNet_UDP_Open failed : " << SDLNet_GetError() << std::endl;
 			return false;
 		}
-
-		std::cout << "\tSuccess!\n\n";
 		return true;
 	}
 	bool SetIPAndPort( const std::string &ip, uint16_t port )
@@ -92,8 +73,6 @@ struct UDPConnection
 			std::cout << "\tSDLNet_ResolveHost failed : " << SDLNet_GetError() << std::endl;
 			return false;
 		}
-
-		std::cout << "\tSuccess!\n\n";
 		return true;
 	}
 	// Send data.
@@ -126,17 +105,10 @@ struct UDPConnection
 			return false;
 		}
 
-		std::cout << "\tSuccess!\n";
-
-		if ( str == "quit" )
-			quit = true;
 		return true;
 	}
 	void CheckForData()
 	{
-		std::cout
-			<< "Check for data...\n";
-
 		// Check t see if there is a packet wauting for us...
 		if ( SDLNet_UDP_Recv(ourSocket, packet))
 		{
@@ -150,10 +122,7 @@ struct UDPConnection
 			std::cout  << "\tNo data received!\n";
 
 	}
-	bool WasQuit()
-	{
-		return quit;
-	}
+
 	private:
 	bool quit;
 	UDPsocket ourSocket;
@@ -161,7 +130,7 @@ struct UDPConnection
 	UDPpacket *packet;
 };
 
-UDPConnection udpConnection;
+
 
 
 bool networkLoop()
@@ -174,12 +143,18 @@ bool networkLoop()
     TCPsocket server = SDLNet_TCP_Open(&hostIP);
     TCPsocket client;
 
+    UDPConnection udpConnection;
+    //udpConnection.Init()
+
+
     while( !quit )
     {
         client=SDLNet_TCP_Accept(server);
-        if(client) // connected to client
+        while(client) // connected to client
         {
-            SDLNet_TCP_Send(client,(const char*)("HELLO WORLD"),12);
+            SDLNet_TCP_Send(client,(const char*)("HELLO"),12);
+            IPaddress *clientIP = SDLNet_TCP_GetPeerAddress(client);
+            //std::cout << (const char*)clientIP.host;
         }
 
     }

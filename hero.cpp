@@ -10,7 +10,7 @@ Hero::Hero()
     setGREEN(255);
     setBLUE(0);
     setXposition(100);
-    setYacceleration(0);
+    setYacceleration(1);
 
 }
 

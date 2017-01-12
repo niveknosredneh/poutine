@@ -8,12 +8,12 @@ extern SDL_Renderer* gRenderer;
 Enemy::Enemy()
 {
 
-    setRED(255);
+    setRED( (rand() % 205) +50);
     setBLUE(0);
     setGREEN(0);
 
-    setWidth( (rand() % 80) +10);
-    setHeight( (rand() % 80) +10);
+    setWidth( (rand() % 150) +10);
+    setHeight( 15 );
 
     // default position
     setXposition(rand() % LEVEL_WIDTH);
@@ -26,6 +26,7 @@ Enemy::~Enemy()
 
 }
 
+/*
 void Enemy::ifCollision(SDL_Rect* rect)
 {
 
@@ -36,3 +37,4 @@ void Enemy::ifCollision(SDL_Rect* rect)
     spawn(lastRect.x,lastRect.y);
 
 }
+*/

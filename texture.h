@@ -14,7 +14,7 @@ class Texture
 		bool loadFromFile( std::string path );
 
 		//Creates image from font string
-		bool loadFromRenderedText( std::string textureText, SDL_Color textColor );
+		bool loadFromRenderedText( std::string textureText, TTF_Font* font, SDL_Color textColor );
 
 		//Deallocates texture
 		void free();

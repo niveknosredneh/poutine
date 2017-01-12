@@ -9,7 +9,7 @@ Mix_Music *bgMusic = NULL;
 
 Mix_Chunk *sfx1 = NULL;
 
-extern TTF_Font *gFont;
+extern TTF_Font *gFont24, *gFont16, *gFont12;
 
 bool init()
 {
@@ -32,7 +32,7 @@ bool init()
 		}
 
 		//Create window
-		gWindow = SDL_CreateWindow( " ~ Kevins shitty game ~ ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
+		gWindow = SDL_CreateWindow( " ~ PIKSUL ~ ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
 		if( gWindow == NULL )
 		{
 			printf( "SDL Error: %s\n", SDL_GetError() );
@@ -109,12 +109,15 @@ bool loadMedia()
 	}
 
     //Open the font
-	gFont = TTF_OpenFont( "verdana.ttf", 16 );
-	if( gFont == NULL )
+	gFont24 = TTF_OpenFont( "verdana.ttf", 24 );
+	if( gFont24 == NULL )
 	{
 		printf( "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError() );
 		success = false;
 	}
+
+	gFont16 = TTF_OpenFont( "verdana.ttf", 16 );
+	gFont12 = TTF_OpenFont( "verdana.ttf", 12 );
 
 	return success;
 }

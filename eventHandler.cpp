@@ -25,7 +25,7 @@ bool eventHandler()
             menuSelect(-1);
         }
 		else
-            hero1.setYvelocity(hero1.getYvelocity()-1);
+            hero1.setYvelocity(hero1.getYvelocity()-3);
 	}
 	if( currentKeyStates[ SDL_SCANCODE_DOWN ] )
 	{
@@ -34,15 +34,15 @@ bool eventHandler()
             menuSelect(1);
         }
 		else
-            hero1.setYvelocity(hero1.getYvelocity()+1);
+            hero1.setYvelocity(hero1.getYvelocity()+3);
 	}
 	if( currentKeyStates[ SDL_SCANCODE_LEFT ] )
 	{
-		hero1.setXvelocity(hero1.getXvelocity()-1);
+		hero1.setXvelocity(hero1.getXvelocity()-3);
 	}
 	if( currentKeyStates[ SDL_SCANCODE_RIGHT ] )
 	{
-		hero1.setXvelocity(hero1.getXvelocity()+1);
+		hero1.setXvelocity(hero1.getXvelocity()+3);
 	}
     if( currentKeyStates[ SDL_SCANCODE_SPACE ] )
 	{

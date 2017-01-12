@@ -16,24 +16,26 @@ SDL_Renderer* gRenderer = NULL;
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 1024;
 
-const int LEVEL_WIDTH = 1280;
+const int LEVEL_WIDTH = 2000;
 const int LEVEL_HEIGHT = 1024;
 
-const int CAPPED_FPS = 75;
+const int CAPPED_FPS = 30;
 const int TICKS_PER_FRAME = 1000 / CAPPED_FPS;
 
 SDL_Color red   = {255,0,0};
 SDL_Color green = {0,255,0};
 SDL_Color blue  = {0,0,255};
 SDL_Color white = {255,255,255};
+SDL_Color darkgray = {69,69,69};
 
-std::vector<std::string> mainMenuTitles = {"solus","multiplus","optiones","exitus"};
-Menu mainMenu(mainMenuTitles, red, green);
-
+Menu mainMenu;
 
 
 //Globally used font
-TTF_Font *gFont = NULL;
+TTF_Font *gFont24 = NULL;
+TTF_Font *gFont16 = NULL;
+TTF_Font *gFont12 = NULL;
+
 
 //Rendered texture
 Texture gTextTexture;
@@ -115,29 +117,17 @@ int main( int argc, char* args[] )
                 SDL_RenderClear( gRenderer );
 
 
-                if(menuSelector==0) gTextTexture.loadFromRenderedText( "Solus" ,  white);
-                else                gTextTexture.loadFromRenderedText( "Solus" ,  {150,150,150});
-                gTextTexture.render( SCREEN_WIDTH/2-35, SCREEN_HEIGHT/2 );
-
-                if(menuSelector==1) gTextTexture.loadFromRenderedText( "Multiplus" , white );
-                else                gTextTexture.loadFromRenderedText( "Multiplus" , {150,150,150} );
-                gTextTexture.render( SCREEN_WIDTH/2-35, SCREEN_HEIGHT/2+25 );
-
-                if(menuSelector==2) gTextTexture.loadFromRenderedText( "Optiones" , white );
-                else                gTextTexture.loadFromRenderedText( "Optiones" , {150,150,150} );
-                gTextTexture.render( SCREEN_WIDTH/2-35, SCREEN_HEIGHT/2+50 );
-
-                if(menuSelector==3) gTextTexture.loadFromRenderedText( "Exitus" , white );
-                else                gTextTexture.loadFromRenderedText( "Exitus" , {150,150,150} );
-                gTextTexture.render( SCREEN_WIDTH/2-35, SCREEN_HEIGHT/2+75 );
-
-
-                // mainMenu.render();
+                mainMenu.render();
 
 
                 SDL_Delay(75);
-                //Update screen
-                //SDL_RenderPresent( gRenderer );
+
+            }
+
+            if(mainState == OPTIONS)
+            {
+                //havent gotten this far
+                mainState = MAIN_MENU;
             }
 
             if(mainState == OPTIONS)
@@ -149,8 +139,8 @@ int main( int argc, char* args[] )
             if(mainState == MULTIPLAYER)
             {
 
-
-
+                //havent gotten this far
+                mainState = MAIN_MENU;
 
             }
 
@@ -210,8 +200,7 @@ int main( int argc, char* args[] )
                     walls[i].render(camera.x,camera.y);
                 }
 
-                //Update screen
-                //SDL_RenderPresent( gRenderer );
+
             }
 
 
@@ -227,7 +216,7 @@ int main( int argc, char* args[] )
 
             // FPS HUD
             // takes FPS from capTimer which gets reset each frame, not averaged out
-            gTextTexture.loadFromRenderedText( "FPS - " + std::to_string(1000.f / capTimer.getTicks()) , blue );
+            gTextTexture.loadFromRenderedText( "FPS - " + std::to_string(1000.f / capTimer.getTicks()) , gFont12,  blue );
             gTextTexture.render( 10, 10 );
 
             //Update screen - only need to do this once per frame

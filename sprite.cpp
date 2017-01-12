@@ -26,12 +26,12 @@ Sprite::Sprite()
 	// change in position per tick (px/tick)
 	Xvelocity = 0;
 	Yvelocity = 0;
-	maxVelocity = 3;
+	maxVelocity = 10;
 
 	// change in velocity per tick (px/tick^2)
 	Xacceleration = 0;
 	Yacceleration = 0;
-	maxAcceleration = 2;
+	maxAcceleration = 5;
 
 	SpriteRect = {Xposition,Yposition, Width, Height};
 
@@ -41,6 +41,7 @@ Sprite::Sprite()
 
 	collisionFlag = false;
 
+	bulletTimer = 0; // as to not spam bullets
 
 }
 
@@ -51,27 +52,27 @@ Sprite::~Sprite()
 
 void Sprite::shoot()
 {
-	Bullet bullet(100);
-	bullet.setRED(hero1.getRED());
-	bullet.setGREEN(hero1.getGREEN());
-	bullet.setBLUE(hero1.getBLUE());
-	bullet.setWidth(Width/10);
-	bullet.setMaxVelocity(15);
+    if(bulletTimer > 3)
+    {
+        Bullet bullet(100);
 
-	bullet.setXposition(Xposition+(Width/2));
-	bullet.setYposition(Yposition+(Height/2));
+        bullet.setXposition(Xposition+(Width/2));
+        bullet.setYposition(Yposition+(Height/2));
 
-	if(Xvelocity>0)
-		bullet.setXvelocity(Xvelocity+3);
-	else if(Xvelocity<0)
-		bullet.setXvelocity(Xvelocity-3);
-	if(Yvelocity>0)
-		bullet.setYvelocity(Yvelocity+3);
-	else if(Yvelocity<0)
-		bullet.setYvelocity(Yvelocity-3);
+        if(Xvelocity>0)
+            bullet.setXvelocity(Xvelocity+3);
+        else if(Xvelocity<0)
+            bullet.setXvelocity(Xvelocity-3);
+        if(Yvelocity>0)
+            bullet.setYvelocity(Yvelocity+3);
+        else if(Yvelocity<0)
+            bullet.setYvelocity(Yvelocity-3);
 
 
-	bullets.push_back(bullet);
+        bullets.push_back(bullet);
+        bulletTimer = 0;
+    }
+
 }
 
 std::vector<Bullet> Sprite::getBullets()
@@ -82,6 +83,9 @@ std::vector<Bullet> Sprite::getBullets()
 // updates position on screen and does some other stuff
 void Sprite::update()
 {
+    // increases bullet timer once per tick
+    bulletTimer++;
+
 
     lastRect = { Xposition, Yposition, Width, Height };
 
@@ -126,8 +130,9 @@ void Sprite::render(int camx, int camy)
 			else
 			{
 				bullets[i].Sprite::update();
-				filledCircleRGBA(gRenderer, bullets[i].getXposition()-camx,
-					bullets[i].getYposition()-camy, bullets[i].getWidth(), bullets[i].getRED(), bullets[i].getGREEN(),bullets[i].getBLUE(), 0xff);
+                SDL_Rect SpriteRect = { bullets[i].getXposition()-camx, bullets[i].getYposition()-camy, bullets[i].getWidth(), bullets[i].getHeight() };
+                SDL_SetRenderDrawColor( gRenderer, bullets[i].getRED(), bullets[i].getGREEN(), bullets[i].getBLUE(), 0xFF );
+                SDL_RenderFillRect( gRenderer, &SpriteRect );
 			}
 		}
 
@@ -163,25 +168,29 @@ void Sprite::collisionResponse(SDL_Rect newRect)
 	if(collisionRect.y + collisionRect.h == newRect.y + newRect.h && collisionRect.w>collisionRect.h) // hits bottom and moving up
 	{
 		invertYvelocity();
-		setYvelocity(Yvelocity+1);
+		//setYvelocity(Yvelocity+1);
+		setYvelocity(0);
 		setYposition(getYposition() + collisionRect.h);
 	}
 	else if(collisionRect.y == newRect.y && collisionRect.w>collisionRect.h) // hits top and moving down
 	{
 		invertYvelocity();
-		setYvelocity(Yvelocity-1);
+		//setYvelocity(Yvelocity-1);
+		setYvelocity(0);
 		setYposition(getYposition() - collisionRect.h);
 	}
 	else if(collisionRect.x + collisionRect.w == newRect.x + newRect.w  && collisionRect.h>collisionRect.w) // hits right and moving left
 	{
 		invertXvelocity();
-		setXvelocity(Xvelocity-1);
+		//setXvelocity(Xvelocity-1);
+		setXvelocity(0);
 		setXposition(getXposition() + collisionRect.w);
 	}
 	else if(collisionRect.x == newRect.x  && collisionRect.h>collisionRect.w) // hits left and moving right
 	{
 		invertXvelocity();
-		setXvelocity(Xvelocity+1);
+		//setXvelocity(Xvelocity+1);
+		setXvelocity(0);
 		setXposition(getXposition() - collisionRect.w);
 	}
 	else if(collisionRect.h==collisionRect.w)

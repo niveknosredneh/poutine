@@ -1,28 +1,36 @@
 #include "main.h"
 #include "menu.h"
 
+extern SDL_Color darkgray;
+extern SDL_Color white;
 
-Menu::Menu(std::vector<std::string> titles, SDL_Color c1, SDL_Color c2)
+extern TTF_Font *gFont24;
+
+
+Menu::Menu()
 {
+    titles[0] = "solo play";
+    titles[1] = "multi play";
+    titles[2] = "options";
+    titles[3] = "exit";
 
-    std::vector<std::string> titlesVec = titles;
 
-    SDL_Color colour1 = c1;
-    SDL_Color colour2 = c2;
+    colour1 = darkgray;
+    colour2 = white;
 
 }
 
 void Menu::render()
 {
 
-    for (std::vector<std::string>::size_type i = 0; i < titlesVec.size(); i++)
+    for (int i = 0; i < 4 ; i++)
     {
 
-        if(menuSelector==(int)i) gTextTexture.loadFromRenderedText( titlesVec[i] ,  colour1);
-        else                gTextTexture.loadFromRenderedText( titlesVec[i] ,  {150,150,150});
-        gTextTexture.render( SCREEN_WIDTH/4, SCREEN_HEIGHT/4 );
+        if(menuSelector==i) gTextTexture.loadFromRenderedText( titles[i] , gFont24,  colour2);
+        else                gTextTexture.loadFromRenderedText( titles[i] , gFont24,  colour1);
 
-        std::cout << titlesVec[i];
+        gTextTexture.render( SCREEN_WIDTH/3, SCREEN_HEIGHT/3 + i*30);
+
     }
 
 }

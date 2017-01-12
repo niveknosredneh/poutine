@@ -9,8 +9,9 @@ class Sprite
 
         SDL_Rect lastRect;
         SDL_Rect SpriteRect;
-        
+
         std::vector<Bullet> bullets;
+        long bulletTimer;
 
 		//Image dimensions
 		int Height;
@@ -55,10 +56,10 @@ class Sprite
 		SDL_Rect getLastRect();
 
 		void spawn (int,int);
-		
+
 		void shoot();
 		std::vector<Bullet> getBullets();
-		
+
 		void setMaxVelocity(int);
 
 		//Gets image dimensions
@@ -96,7 +97,7 @@ class Sprite
 
 		void invertXvelocity();
 		void invertYvelocity();
-		
+
 		int getMass();
 };
 

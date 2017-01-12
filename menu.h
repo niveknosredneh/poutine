@@ -7,7 +7,7 @@ class Menu
 {
 	protected:
 
-        std::vector<std::string> titlesVec;
+        std::string titles[4];
 
         SDL_Color colour1;
         SDL_Color colour2;
@@ -16,9 +16,8 @@ class Menu
 
     public:
 
-        Menu(std::vector<std::string>,SDL_Color,SDL_Color);
+        Menu();
 
-        void mainMenu();
         void render();
 
 
