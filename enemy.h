@@ -17,7 +17,7 @@ class Enemy : public Sprite
 		//Deallocates memory
 		~Enemy();
 
-		void ifCollision(SDL_Rect*);
+		void ifCollision();
 
 };
 

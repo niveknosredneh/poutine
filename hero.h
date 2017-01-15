@@ -5,7 +5,12 @@ class Hero : public Sprite
 {
 	private:
 
-		
+        std::vector<Bullet> bullets;
+        std::vector<Sprite> companions;
+
+        unsigned long bulletTimer;
+
+
 	public:
 		//Initializes variables
 		Hero();
@@ -13,7 +18,15 @@ class Hero : public Sprite
 		//Deallocates memory
 		~Hero();
 
-		void ifCollision();
+        void jump();
+		void shoot();
+
+		void renderBullets(int,int);
+
+		void updateCompanions();
+
+		std::vector<Bullet> getBullets();
+		bool checkCollision(SDL_Rect* rect);
 
 };
 

@@ -9,8 +9,8 @@ Bullet::Bullet(int ticks)
     GREEN = 255;
     BLUE = 255;
 
-    Width = 2;
-    Height = 2;
+    Width = 4;
+    Height = 4;
 
 	lifetime = ticks;
 

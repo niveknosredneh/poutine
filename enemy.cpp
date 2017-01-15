@@ -8,11 +8,11 @@ extern SDL_Renderer* gRenderer;
 Enemy::Enemy()
 {
 
-    setRED( (rand() % 205) +50);
+    setRED( (rand() % 155) +100);
     setBLUE(0);
     setGREEN(0);
 
-    setWidth( (rand() % 150) +10);
+    setWidth( (rand() % 150) +15);
     setHeight( 15 );
 
     // default position
@@ -26,15 +26,10 @@ Enemy::~Enemy()
 
 }
 
-/*
-void Enemy::ifCollision(SDL_Rect* rect)
+
+void Enemy::ifCollision()
 {
 
-    // spawn back to previous location
-    // used to stop passing through objects
-    Xvelocity-=2;
-    Yvelocity-=2;
-    spawn(lastRect.x,lastRect.y);
-
+    Sprite::setRED(getRED()-1);
 }
-*/
+

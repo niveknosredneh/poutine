@@ -7,10 +7,9 @@ class Menu
 {
 	protected:
 
-        std::string titles[4];
+        std::string titles[8];
 
-        SDL_Color colour1;
-        SDL_Color colour2;
+        int menuTimer;
 
 
 

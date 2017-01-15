@@ -1,10 +1,11 @@
 #include "main.h"
 #include "menu.h"
 
-extern SDL_Color darkgray;
-extern SDL_Color white;
+extern SDL_Color darkgray, white, red, blue, green, yellow, cyan, magenta;
+
 
 extern TTF_Font *gFont24;
+extern int menuTimer;
 
 
 Menu::Menu()
@@ -15,8 +16,7 @@ Menu::Menu()
     titles[3] = "exit";
 
 
-    colour1 = darkgray;
-    colour2 = white;
+    menuTimer = 0;
 
 }
 
@@ -25,14 +25,50 @@ void Menu::render()
 
     for (int i = 0; i < 4 ; i++)
     {
+        if( titles[i] != "")
+        {
+            if(menuSelector==i) gTextTexture.loadFromRenderedText( titles[i] , gFont24,  white);
+            else                gTextTexture.loadFromRenderedText( titles[i] , gFont24,  darkgray);
 
-        if(menuSelector==i) gTextTexture.loadFromRenderedText( titles[i] , gFont24,  colour2);
-        else                gTextTexture.loadFromRenderedText( titles[i] , gFont24,  colour1);
+            gTextTexture.render( SCREEN_WIDTH/3, SCREEN_HEIGHT/3 + i*30);
+        }
 
-        gTextTexture.render( SCREEN_WIDTH/3, SCREEN_HEIGHT/3 + i*30);
 
     }
 
+    if (!(menuTimer % 5))
+    {
+        gTextTexture.loadFromRenderedText( "P" , gFont24,  red );
+        gTextTexture.render( SCREEN_WIDTH/3 + 5, SCREEN_HEIGHT/5);
+    }
+    if (!(menuTimer % 6))
+    {
+        gTextTexture.loadFromRenderedText( "I" , gFont24,  blue);
+        gTextTexture.render( SCREEN_WIDTH/3 + 30, SCREEN_HEIGHT/5);
+    }
+    if (!(menuTimer % 7))
+    {
+        gTextTexture.loadFromRenderedText( "K" , gFont24,  green);
+        gTextTexture.render( SCREEN_WIDTH/3 + 50, SCREEN_HEIGHT/5);
+    }
+    if (!(menuTimer % 8))
+    {
+        gTextTexture.loadFromRenderedText( "S" , gFont24,  yellow);
+        gTextTexture.render( SCREEN_WIDTH/3 + 80, SCREEN_HEIGHT/5);
+    }
+    if (!(menuTimer % 9))
+    {
+        gTextTexture.loadFromRenderedText( "U" , gFont24,  cyan);
+        gTextTexture.render( SCREEN_WIDTH/3 + 107, SCREEN_HEIGHT/5);
+    }
+    if (!(menuTimer % 10))
+    {
+        gTextTexture.loadFromRenderedText( "L" , gFont24,  magenta);
+        gTextTexture.render( SCREEN_WIDTH/3 + 140, SCREEN_HEIGHT/5);
+    }
+
+
+    menuTimer++;
 }
 
 

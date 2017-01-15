@@ -28,7 +28,6 @@
 #include "timer.h"
 #include "init.h"
 #include "eventHandler.h"
-//#include "wall.h"
 #include "audio.h"
 #include "texture.h"
 #include "sprite.h"

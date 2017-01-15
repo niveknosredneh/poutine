@@ -19,7 +19,7 @@ const int SCREEN_HEIGHT = 1024;
 const int LEVEL_WIDTH = 2000;
 const int LEVEL_HEIGHT = 1024;
 
-const int CAPPED_FPS = 30;
+const int CAPPED_FPS = 25;
 const int TICKS_PER_FRAME = 1000 / CAPPED_FPS;
 
 SDL_Color red   = {255,0,0};
@@ -27,15 +27,16 @@ SDL_Color green = {0,255,0};
 SDL_Color blue  = {0,0,255};
 SDL_Color white = {255,255,255};
 SDL_Color darkgray = {69,69,69};
+SDL_Color yellow   = {255,255,0};
+SDL_Color cyan   = {0,255,255};
+SDL_Color magenta   = {255,0,255};
 
 Menu mainMenu;
-
 
 //Globally used font
 TTF_Font *gFont24 = NULL;
 TTF_Font *gFont16 = NULL;
 TTF_Font *gFont12 = NULL;
-
 
 //Rendered texture
 Texture gTextTexture;
@@ -56,7 +57,7 @@ int main( int argc, char* args[] )
 		std::vector<Sprite> sprites; // master list of sprites ? (not subsprites)
 		sprites.push_back(hero1);
 
-        std::vector<Enemy> walls(25);
+        std::vector<Enemy> walls(55);
         if (walls.size()>0)
 		{
 			for (std::vector<Enemy>::size_type i = 0; i < walls.size(); i++)
@@ -94,6 +95,10 @@ int main( int argc, char* args[] )
             timeText.str( "" );
             timeText << "FPS " << avgFPS;
 
+            //clear the screen
+            SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
+            SDL_RenderClear( gRenderer );
+
             if(mainState==QUIT)
             {
                 quit=true;
@@ -113,14 +118,11 @@ int main( int argc, char* args[] )
 
 		    if(mainState == MAIN_MENU)
             {
-                SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
-                SDL_RenderClear( gRenderer );
-
 
                 mainMenu.render();
 
 
-                SDL_Delay(75);
+                SDL_Delay(80);
 
             }
 
@@ -148,11 +150,6 @@ int main( int argc, char* args[] )
             if(mainState == LEVEL1)
             {
 
-                //Clear screen
-                SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
-                SDL_RenderClear( gRenderer );
-
-
 
                 // where to place vision
                 camera.x =  hero1.getXposition() - SCREEN_WIDTH/2;
@@ -179,6 +176,7 @@ int main( int argc, char* args[] )
 
                 //update sprites
                 hero1.update();
+                hero1.updateCompanions();
 
                 for (std::vector<Enemy>::size_type i = 0; i < walls.size(); i++)
                 {
@@ -187,19 +185,19 @@ int main( int argc, char* args[] )
                     SDL_Rect newRect = walls[i].getRect();
                     if (hero1.checkCollision(&newRect))
                     {
+                        walls[i].ifCollision();
                         hero1.collisionResponse(newRect);
-                        //filledCircleColor(gRenderer, hero1.getXposition()+hero1.getWidth()/2, hero1.getYposition()+hero1.getHeight()/2, hero1.getWidth()/2, 0xFF0000FF);
+                        //filledCircleColor(gRenderer, hero1.getXposition() + hero1.getWidth()/2 - camera.x, hero1.getYposition() - camera.y , 15, 0xFF0000FF);
                     }
-
                 }
 
                 // render sprites after collision detection
-                hero1.render(camera.x,camera.y); // hero and bullets
+                hero1.Hero::renderBullets(camera.x,camera.y);
+                hero1.Sprite::render(camera.x, camera.y);
                 for (std::vector<Enemy>::size_type i = 0; i < walls.size(); i++)
                 {
                     walls[i].render(camera.x,camera.y);
                 }
-
 
             }
 
@@ -212,6 +210,7 @@ int main( int argc, char* args[] )
             {
                 SDL_Delay( TICKS_PER_FRAME - frameTicks );
             }
+
 
 
             // FPS HUD

@@ -15,8 +15,6 @@ Sprite::Sprite()
 	Width = 20;
 	Height = 20;
 
-	// f1 = f1 = constant * m1 * m2 / r^2
-
 	Mass = 1; // TODO
 
 	// position on screen, with origin in top left corner
@@ -41,8 +39,6 @@ Sprite::Sprite()
 
 	collisionFlag = false;
 
-	bulletTimer = 0; // as to not spam bullets
-
 }
 
 Sprite::~Sprite()
@@ -50,42 +46,10 @@ Sprite::~Sprite()
 	// TODO learn how to clean up properly
 }
 
-void Sprite::shoot()
-{
-    if(bulletTimer > 3)
-    {
-        Bullet bullet(100);
-
-        bullet.setXposition(Xposition+(Width/2));
-        bullet.setYposition(Yposition+(Height/2));
-
-        if(Xvelocity>0)
-            bullet.setXvelocity(Xvelocity+3);
-        else if(Xvelocity<0)
-            bullet.setXvelocity(Xvelocity-3);
-        if(Yvelocity>0)
-            bullet.setYvelocity(Yvelocity+3);
-        else if(Yvelocity<0)
-            bullet.setYvelocity(Yvelocity-3);
-
-
-        bullets.push_back(bullet);
-        bulletTimer = 0;
-    }
-
-}
-
-std::vector<Bullet> Sprite::getBullets()
-{
-	return bullets;
-}
 
 // updates position on screen and does some other stuff
 void Sprite::update()
 {
-    // increases bullet timer once per tick
-    bulletTimer++;
-
 
     lastRect = { Xposition, Yposition, Width, Height };
 
@@ -113,28 +77,11 @@ void Sprite::update()
 
 void Sprite::render(int camx, int camy)
 {
-		// render hero
+
+		// render sprite
         SDL_Rect SpriteRect = { Xposition-camx, Yposition-camy, Width, Height };
 		SDL_SetRenderDrawColor( gRenderer, RED, GREEN, BLUE, 0xFF );
 		SDL_RenderFillRect( gRenderer, &SpriteRect );
-
-		// render bullets
-		for (std::vector<Bullet>::size_type i = 0; i < bullets.size(); i++)
-		{
-
-			bullets[i].setLifetime(bullets[i].getLifetime()-1);
-
-			unsigned long life = bullets[i].getLifetime();
-			if(life<1 || (bullets[i].getXvelocity()==0 && bullets[i].getYvelocity()==0)) // non moving bullets dissapear too
-				bullets.erase(bullets.begin()+i);
-			else
-			{
-				bullets[i].Sprite::update();
-                SDL_Rect SpriteRect = { bullets[i].getXposition()-camx, bullets[i].getYposition()-camy, bullets[i].getWidth(), bullets[i].getHeight() };
-                SDL_SetRenderDrawColor( gRenderer, bullets[i].getRED(), bullets[i].getGREEN(), bullets[i].getBLUE(), 0xFF );
-                SDL_RenderFillRect( gRenderer, &SpriteRect );
-			}
-		}
 
         //SDL_RenderDrawRect( gRenderer, &SpriteRect ); //no fill
 }
@@ -148,14 +95,6 @@ bool Sprite::checkCollision(SDL_Rect* rect)
 	{
 		collisionFlag = true;
     }
-
-    for(std::vector<Bullet>::size_type j = 0; j < bullets.size(); j++)
-	{
-		if (bullets[j].checkCollision(rect))
-		{
-			bullets.erase(bullets.begin()+j);
-		}
-	}
 
 	return collisionFlag;
 }
@@ -193,12 +132,7 @@ void Sprite::collisionResponse(SDL_Rect newRect)
 		setXvelocity(0);
 		setXposition(getXposition() - collisionRect.w);
 	}
-	else if(collisionRect.h==collisionRect.w)
-	{
-		//invertXvelocity();
-		//invertYvelocity();
-		//filledCircleColor(gRenderer, getXposition()+getWidth()/2, getYposition()+getHeight()/2, getWidth()/2, 0xFF0000FF);
-	}
+
 
 }
 
