@@ -1,8 +1,8 @@
-#ifndef ENEMY_H
-#define ENEMY_H
+#ifndef Planet_H
+#define Planet_H
 
 
-class Enemy : public Sprite
+class Planet : public Sprite
 {
 
     private:
@@ -12,10 +12,10 @@ class Enemy : public Sprite
 
 	public:
 		//Initializes variables
-		Enemy();
+		Planet(int);
 
 		//Deallocates memory
-		~Enemy();
+		~Planet();
 
 		void ifCollision();
 

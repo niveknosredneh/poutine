@@ -48,6 +48,7 @@ class Sprite
 		void collisionResponse(SDL_Rect);
 		SDL_Rect getCollision(SDL_Rect*);
 		void unsetCollision();
+		void setCollision();
 
 		SDL_Rect getRect();
 		SDL_Rect getLastRect();

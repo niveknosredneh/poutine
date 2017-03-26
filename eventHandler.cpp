@@ -12,7 +12,7 @@ bool eventHandler()
 	}
 	if( currentKeyStates[ SDL_SCANCODE_LCTRL ] )
 	{
-		hero1.setXvelocity(0);
+		hero1.jump();
 	}
 	if( currentKeyStates[ SDL_SCANCODE_LALT ] )
 	{
@@ -25,7 +25,7 @@ bool eventHandler()
             menuSelect(-1);
         }
 		else
-            hero1.setYvelocity(hero1.getYvelocity()-3);
+            hero1.moveUp();
 	}
 	if( currentKeyStates[ SDL_SCANCODE_DOWN ] )
 	{
@@ -34,15 +34,15 @@ bool eventHandler()
             menuSelect(1);
         }
 		else
-            hero1.setYvelocity(hero1.getYvelocity()+3);
+            hero1.moveDown();
 	}
 	if( currentKeyStates[ SDL_SCANCODE_LEFT ] )
 	{
-		hero1.setXvelocity(hero1.getXvelocity()-3);
+		hero1.moveLeft();
 	}
 	if( currentKeyStates[ SDL_SCANCODE_RIGHT ] )
 	{
-		hero1.setXvelocity(hero1.getXvelocity()+3);
+		hero1.moveRight();
 	}
     if( currentKeyStates[ SDL_SCANCODE_SPACE ] )
 	{

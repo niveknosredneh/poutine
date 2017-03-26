@@ -12,8 +12,8 @@ jump velocity (jmp) and gravity (grv) are added to Ysp
 Sprite::Sprite()
 {
 	//Initialize
-	Width = 20;
-	Height = 20;
+	Width = 10;
+	Height = 10;
 
 	Mass = 1; // TODO
 
@@ -55,13 +55,15 @@ void Sprite::update()
 
     // off screen conditions
     if(Xposition<0)
-		Xposition+=LEVEL_WIDTH;
+		Xposition=0;
     if(Xposition>LEVEL_WIDTH-Width)
-        Xposition-=LEVEL_WIDTH;
+        Xposition=LEVEL_WIDTH-Width;
     if(Yposition<0)
-		Yposition+=LEVEL_HEIGHT;
+		Yposition=0;
     if(Yposition>LEVEL_HEIGHT-Height)
-        Yposition-=LEVEL_HEIGHT;
+        spawn(25,25);
+        //Yposition=LEVEL_HEIGHT-Height;
+
 
     lastRect = { Xposition, Yposition, Width, Height };
 
@@ -72,6 +74,19 @@ void Sprite::update()
     Yposition += Yvelocity;
 
     SpriteRect = { Xposition, Yposition, Width, Height };
+
+    // friction..?
+    if(collisionFlag)
+    {
+        if(Xvelocity<0) setXvelocity(getXvelocity()+1);
+        else if(Xvelocity>0) setXvelocity(getXvelocity()-1);
+
+        if(Yvelocity<0) setYvelocity(getYvelocity()-1);
+        else if(Yvelocity>0) setYvelocity(getYvelocity()+1);
+    }
+
+
+    unsetCollision();
 
 }
 
@@ -90,13 +105,14 @@ void Sprite::render(int camx, int camy)
 bool Sprite::checkCollision(SDL_Rect* rect)
 {
 
-    collisionFlag = false;
+    bool flag = false;
     if ( SDL_HasIntersection(&SpriteRect,rect)==SDL_TRUE )
 	{
+		flag = true;
 		collisionFlag = true;
     }
 
-	return collisionFlag;
+	return flag;
 }
 
 
@@ -107,33 +123,34 @@ void Sprite::collisionResponse(SDL_Rect newRect)
 	if(collisionRect.y + collisionRect.h == newRect.y + newRect.h && collisionRect.w>collisionRect.h) // hits bottom and moving up
 	{
 		invertYvelocity();
-		//setYvelocity(Yvelocity+1);
 		setYvelocity(0);
 		setYposition(getYposition() + collisionRect.h);
 	}
 	else if(collisionRect.y == newRect.y && collisionRect.w>collisionRect.h) // hits top and moving down
 	{
 		invertYvelocity();
-		//setYvelocity(Yvelocity-1);
 		setYvelocity(0);
 		setYposition(getYposition() - collisionRect.h);
 	}
 	else if(collisionRect.x + collisionRect.w == newRect.x + newRect.w  && collisionRect.h>collisionRect.w) // hits right and moving left
 	{
 		invertXvelocity();
-		//setXvelocity(Xvelocity-1);
 		setXvelocity(0);
 		setXposition(getXposition() + collisionRect.w);
 	}
 	else if(collisionRect.x == newRect.x  && collisionRect.h>collisionRect.w) // hits left and moving right
 	{
 		invertXvelocity();
-		//setXvelocity(Xvelocity+1);
 		setXvelocity(0);
 		setXposition(getXposition() - collisionRect.w);
 	}
 
 
+}
+
+void Sprite::setCollision()
+{
+    collisionFlag = true;
 }
 
 

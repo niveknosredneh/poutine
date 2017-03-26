@@ -16,10 +16,10 @@ SDL_Renderer* gRenderer = NULL;
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 1024;
 
-const int LEVEL_WIDTH = 2000;
-const int LEVEL_HEIGHT = 1024;
+const int LEVEL_WIDTH = 10000;
+const int LEVEL_HEIGHT = 10000;
 
-const int CAPPED_FPS = 25;
+const int CAPPED_FPS = 30;
 const int TICKS_PER_FRAME = 1000 / CAPPED_FPS;
 
 SDL_Color red   = {255,0,0};
@@ -57,15 +57,16 @@ int main( int argc, char* args[] )
 		std::vector<Sprite> sprites; // master list of sprites ? (not subsprites)
 		sprites.push_back(hero1);
 
-        std::vector<Enemy> walls(55);
-        if (walls.size()>0)
-		{
-			for (std::vector<Enemy>::size_type i = 0; i < walls.size(); i++)
-			{
-				sprites.push_back(walls[i]); // add to list of sprites
+        std::vector<Planet> planets;
 
-			}
-		}
+        for (int i = 0; i < 2; i++)
+        {
+            Planet newPlanet(i);
+            planets.push_back(newPlanet);
+            sprites.push_back(newPlanet); // add to list of sprites
+
+        }
+
 
         Timer fpsTimer; // Timer object
         Timer capTimer;
@@ -120,7 +121,6 @@ int main( int argc, char* args[] )
             {
 
                 mainMenu.render();
-
 
                 SDL_Delay(80);
 
@@ -178,26 +178,29 @@ int main( int argc, char* args[] )
                 hero1.update();
                 hero1.updateCompanions();
 
-                for (std::vector<Enemy>::size_type i = 0; i < walls.size(); i++)
+                for (std::vector<Planet>::size_type i = 0; i < planets.size(); i++)
                 {
-                    walls[i].update();
+                    planets[i].update();
 
-                    SDL_Rect newRect = walls[i].getRect();
+                    SDL_Rect newRect = planets[i].getRect();
                     if (hero1.checkCollision(&newRect))
                     {
-                        walls[i].ifCollision();
+                        planets[i].ifCollision();
                         hero1.collisionResponse(newRect);
                         //filledCircleColor(gRenderer, hero1.getXposition() + hero1.getWidth()/2 - camera.x, hero1.getYposition() - camera.y , 15, 0xFF0000FF);
                     }
                 }
 
+
                 // render sprites after collision detection
-                hero1.Hero::renderBullets(camera.x,camera.y);
-                hero1.Sprite::render(camera.x, camera.y);
-                for (std::vector<Enemy>::size_type i = 0; i < walls.size(); i++)
+                for (std::vector<Planet>::size_type i = 0; i < planets.size(); i++)
                 {
-                    walls[i].render(camera.x,camera.y);
+                    planets[i].render(camera.x,camera.y);
                 }
+
+
+                hero1.Sprite::render(camera.x, camera.y);
+                hero1.Hero::renderBullets(camera.x,camera.y);
 
             }
 
