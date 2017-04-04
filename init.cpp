@@ -1,6 +1,8 @@
 #include "main.h"
 #include "init.h"
 
+// Warning: lots of boilerplate
+
 extern SDL_Renderer* gRenderer;
 extern SDL_Window* gWindow;
 

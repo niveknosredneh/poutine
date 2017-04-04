@@ -6,6 +6,8 @@ Hero hero1;
 GameState mainState = MAIN_MENU; // see main.h
 short menuSelector = 0;
 
+std::string DMSG;
+
 //The window we'll be rendering to
 SDL_Window* gWindow = NULL;
 
@@ -19,7 +21,7 @@ const int SCREEN_HEIGHT = 1024;
 const int LEVEL_WIDTH = 10000;
 const int LEVEL_HEIGHT = 10000;
 
-const int CAPPED_FPS = 30;
+const int CAPPED_FPS = 25;
 const int TICKS_PER_FRAME = 1000 / CAPPED_FPS;
 
 SDL_Color red   = {255,0,0};
@@ -59,7 +61,7 @@ int main( int argc, char* args[] )
 
         std::vector<Planet> planets;
 
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 3; i++)
         {
             Planet newPlanet(i);
             planets.push_back(newPlanet);
@@ -178,18 +180,43 @@ int main( int argc, char* args[] )
                 hero1.update();
                 hero1.updateCompanions();
 
+
+
+
+
+                SDL_Rect newRect = changeAngle(planets[0].getRect(),planets[1].getRect(), 5);
+                planets[1].setXposition(newRect.x);
+                planets[1].setYposition(newRect.y);
+                newRect = changeAngle(planets[0].getRect(),planets[2].getRect(), 5);
+                planets[2].setXposition(newRect.x);
+                planets[2].setYposition(newRect.y);
+
+
                 for (std::vector<Planet>::size_type i = 0; i < planets.size(); i++)
                 {
                     planets[i].update();
+
+                    // just for fun ... planet lines
+                    SDL_SetRenderDrawColor(gRenderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
+                    SDL_RenderDrawLine(gRenderer, hero1.getXposition()+hero1.getWidth()/2 - camera.x, hero1.getYposition()+hero1.getHeight()/2 - camera.y,
+                                        planets[i].getXposition()+planets[i].getWidth()/2 - camera.x, planets[i].getYposition()+planets[i].getHeight()/2 - camera.y );
+                    // end planet lines
+
 
                     SDL_Rect newRect = planets[i].getRect();
                     if (hero1.checkCollision(&newRect))
                     {
                         planets[i].ifCollision();
                         hero1.collisionResponse(newRect);
-                        //filledCircleColor(gRenderer, hero1.getXposition() + hero1.getWidth()/2 - camera.x, hero1.getYposition() - camera.y , 15, 0xFF0000FF);
+
+
+                        filledCircleColor(gRenderer, hero1.getXposition() + hero1.getWidth()/2 - camera.x, hero1.getYposition() + hero1.getHeight()/2 - camera.y , 13, 0xFF0000FF);
                     }
                 }
+
+
+
+
 
 
                 // render sprites after collision detection
@@ -215,11 +242,38 @@ int main( int argc, char* args[] )
             }
 
 
+            std::string debug = (std::string)SDL_GetPlatform() + " "
+                                + std::to_string(SDL_GetCPUCount()) + "xCPU "
+                                + std::to_string(SDL_GetSystemRAM()) + "MB RAM";
 
-            // FPS HUD
+
+            // <---- DEBUG HUD
             // takes FPS from capTimer which gets reset each frame, not averaged out
-            gTextTexture.loadFromRenderedText( "FPS - " + std::to_string(1000.f / capTimer.getTicks()) , gFont12,  blue );
+            gTextTexture.loadFromRenderedText( debug, gFont12,  red );
             gTextTexture.render( 10, 10 );
+
+            gTextTexture.loadFromRenderedText( std::to_string(1000.f / capTimer.getTicks()) + " fps" , gFont12,  red );
+            gTextTexture.render( 10, 25 );
+
+            gTextTexture.loadFromRenderedText( std::to_string( getRadius(hero1.getRect(),planets[0].getRect())), gFont12,  red );
+            gTextTexture.render( 10, 40 );
+
+            double theta = getTheta(hero1.getRect(),planets[0].getRect()) * 180.0/3.141593;;
+            if (theta<0) theta+=360; // weird degree conversion, cant explain
+
+            gTextTexture.loadFromRenderedText( std::to_string(theta), gFont12,  red );
+            gTextTexture.render( 10, 55 );
+            gTextTexture.loadFromRenderedText( std::to_string(hero1.getXposition()) + ", "
+                                            + std::to_string(hero1.getXvelocity()) + " / "
+                                            + std::to_string(hero1.getYposition()) + ", "
+                                            + std::to_string(hero1.getYvelocity())
+                                            , gFont12,  red );
+            gTextTexture.render( 10, 70 );
+            gTextTexture.loadFromRenderedText( DMSG, gFont12,  red );
+            gTextTexture.render( 10, 85 );
+
+            // END DEBUG HUD section --->
+
 
             //Update screen - only need to do this once per frame
             SDL_RenderPresent( gRenderer );

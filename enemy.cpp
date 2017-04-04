@@ -24,16 +24,22 @@ Planet::Planet(int planetID)
     }
     if(planetID==1) // Earth
     {
-        setRED(20);
+        setRED(2);
         setBLUE(255);
-        setGREEN(100);
+        setGREEN(10);
 
-        radius = 6; // x 1000 km
-        distFrSun = 150; // x
+        radius = 20; // x 1000 km
+        distFrSun = 200; // x
 
     }
     if(planetID==2) // Mars
     {
+        setRED(20);
+        setBLUE(8);
+        setGREEN(8);
+
+        radius = 30; // x 1000 km
+        distFrSun = 300; // x
 
 
     }
@@ -50,8 +56,8 @@ Planet::Planet(int planetID)
 
     setHeight(radius*2);
     setWidth(radius*2);
-    setXposition(distFrSun + 900);
-    setYposition(distFrSun + 900);
+    setXposition(distFrSun + 1000);
+    setYposition(distFrSun + 1000);
 
 }
 

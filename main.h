@@ -37,6 +37,9 @@
 #include "io.h"
 #include "network.h"
 #include "menu.h"
+#include "mymath.h"
+
+extern std::string DMSG;
 
 enum GameState { MAIN_MENU, LEVEL1, MULTIPLAYER, OPTIONS, QUIT };
 

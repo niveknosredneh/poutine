@@ -36,31 +36,25 @@ void Menu::render()
 
     }
 
-    if (!(menuTimer % 5))
-    {
-        gTextTexture.loadFromRenderedText( "P" , gFont24,  red );
+
+        gTextTexture.loadFromRenderedText( "P" , gFont24, {red.r,menuTimer, 0});
         gTextTexture.render( SCREEN_WIDTH/3 + 5, SCREEN_HEIGHT/5);
-    }
-    if (!(menuTimer % 6))
-    {
-        gTextTexture.loadFromRenderedText( "I" , gFont24,  blue);
+
+        gTextTexture.loadFromRenderedText( "I" , gFont24,  {menuTimer*0.25,menuTimer,blue.b});
         gTextTexture.render( SCREEN_WIDTH/3 + 30, SCREEN_HEIGHT/5);
-    }
-    if (!(menuTimer % 7))
-    {
+
         gTextTexture.loadFromRenderedText( "K" , gFont24,  green);
         gTextTexture.render( SCREEN_WIDTH/3 + 50, SCREEN_HEIGHT/5);
-    }
+
     if (!(menuTimer % 8))
     {
         gTextTexture.loadFromRenderedText( "S" , gFont24,  yellow);
         gTextTexture.render( SCREEN_WIDTH/3 + 80, SCREEN_HEIGHT/5);
     }
-    if (!(menuTimer % 9))
-    {
+
         gTextTexture.loadFromRenderedText( "U" , gFont24,  cyan);
         gTextTexture.render( SCREEN_WIDTH/3 + 107, SCREEN_HEIGHT/5);
-    }
+
     if (!(menuTimer % 10))
     {
         gTextTexture.loadFromRenderedText( "L" , gFont24,  magenta);

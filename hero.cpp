@@ -52,7 +52,7 @@ void Hero::jump()
 
 void Hero::moveLeft()
 {
-    if(collisionFlag)
+    if(!collisionFlag)
     {
         hero1.setXvelocity(hero1.getXvelocity()-1);
     }
@@ -66,7 +66,7 @@ void Hero::moveLeft()
 }
 void Hero::moveRight()
 {
-    if(collisionFlag)
+    if(!collisionFlag)
     {
         hero1.setXvelocity(hero1.getXvelocity()+1);
     }
@@ -79,7 +79,7 @@ void Hero::moveRight()
 }
 void Hero::moveUp()
 {
-    if(collisionFlag)
+    if(!collisionFlag)
     {
         hero1.setYvelocity(hero1.getYvelocity()-1);
     }
@@ -92,7 +92,7 @@ void Hero::moveUp()
 }
 void Hero::moveDown()
 {
-    if(collisionFlag)
+    if(!collisionFlag)
     {
         hero1.setYvelocity(hero1.getYvelocity()+1);
     }
@@ -165,19 +165,19 @@ void Hero::updateCompanions()
 
         }
 
-        if(companions[i].getXposition() - getXposition() - (Width/2) > 5)
+        if(companions[i].getXposition() + companions[i].getWidth() - getXposition() - (Width/2) > 3)
         {
             companions[i].setXvelocity( companions[i].getXvelocity() - (3 + (rand() % 2)));
         }
-        else if(companions[i].getXposition() - getXposition() < -5)
+        else if(companions[i].getXposition() + companions[i].getWidth() - getXposition() - (Width/2) < -3)
         {
             companions[i].setXvelocity( companions[i].getXvelocity() + (3 + (rand() % 2)));
         }
-        if(companions[i].getYposition() - getYposition() - (Height/2) > 5)
+        if(companions[i].getYposition() + companions[i].getWidth() - getYposition() - (Height/2) > 3)
         {
             companions[i].setYvelocity( companions[i].getYvelocity() - (3 + (rand() % 2)));
         }
-        else if(companions[i].getYposition() - getYposition() < -5)
+        else if(companions[i].getYposition() + companions[i].getWidth() - getYposition() - (Height/2) < -3)
         {
             companions[i].setYvelocity( companions[i].getYvelocity() + (3 + (rand() % 2)));
         }

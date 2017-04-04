@@ -1,8 +1,6 @@
 #include "main.h"
 #include "audio.h"
 
-
-
 //The music that will be played
 extern Mix_Music *bgMusic;
 
