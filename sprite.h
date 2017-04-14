@@ -13,8 +13,10 @@ class Sprite
 		//Image dimensions
 		int Height;
 		int Width;
+		int Depth;  // used for camera multiplier (stars)
 
 		int Mass; // TODO
+		std::vector<Sprite>::size_type RotatingAround;
 
 		int Xposition; //top left coordinate of rectangle
 		int Yposition;
@@ -33,9 +35,13 @@ class Sprite
 
 		bool collisionFlag;
 
+		std::string label;
+		double Radius;
+
 	public:
 		//Initializes variables
 		Sprite();
+		Sprite(int X, int Y, int W, int H, SDL_Color, double radius, std::vector<Sprite>::size_type, std::string );
 
 		//Deallocates memory
 		~Sprite();
@@ -57,11 +63,18 @@ class Sprite
 
 		void setMaxVelocity(int);
 
+		double getRad();
+		std::vector<Sprite>::size_type getRotating();
+
 		//Gets image dimensions
 		int getWidth();
 		int getHeight();
 		void setHeight(int newHeight);
 		void setWidth(int newWidth);
+
+		int getDepth();
+        void setDepth(int newDepth);
+
 
 		//Gets image dimensions
 		int getXposition();

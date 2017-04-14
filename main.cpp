@@ -18,20 +18,24 @@ SDL_Renderer* gRenderer = NULL;
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 1024;
 
-const int LEVEL_WIDTH = 10000;
-const int LEVEL_HEIGHT = 10000;
+const int LEVEL_WIDTH = 20000;
+const int LEVEL_HEIGHT = 20000;
 
-const int CAPPED_FPS = 25;
+const int CAPPED_FPS = 15;
 const int TICKS_PER_FRAME = 1000 / CAPPED_FPS;
 
-SDL_Color red   = {255,0,0};
+SDL_Color red   = {108, 26, 9};
 SDL_Color green = {0,255,0};
-SDL_Color blue  = {0,0,255};
+SDL_Color blue  = {32, 111, 176};
+SDL_Color lightblue  = {113, 187, 249};
 SDL_Color white = {255,255,255};
 SDL_Color darkgray = {69,69,69};
+SDL_Color orange = {221, 131, 16};
+SDL_Color darkorange = {166, 115, 4};
 SDL_Color yellow   = {255,255,0};
 SDL_Color cyan   = {0,255,255};
 SDL_Color magenta   = {255,0,255};
+SDL_Color brown   = {109, 54, 43};
 
 Menu mainMenu;
 
@@ -59,33 +63,101 @@ int main( int argc, char* args[] )
 		std::vector<Sprite> sprites; // master list of sprites ? (not subsprites)
 		sprites.push_back(hero1);
 
-        std::vector<Planet> planets;
 
-        for (int i = 0; i < 3; i++)
+        // begin Planet definitions
+        std::vector<Sprite> planets;
+
+        Sprite sol(5000,5000, 7000, 7000, yellow, 0, 0, "sol");
+        planets.push_back(sol);
+        sprites.push_back(sol); // add to list of sprites
+
+        Sprite mercury(500,700, 25, 25, white, 4000, 0,"mercury");
+        planets.push_back(mercury);
+        sprites.push_back(mercury);
+
+        Sprite venus(500,700, 80, 80, orange, 5000, 0,"venus");
+        planets.push_back(venus);
+        sprites.push_back(venus);
+
+        Sprite terra(500,700, 70, 70, blue, 6600, 0,"terra");
+        planets.push_back(terra);
+        sprites.push_back(terra);
+
+        Sprite luna(500,700, 8, 8, yellow, 100, 3,"luna");
+        planets.push_back(luna);
+        sprites.push_back(luna);
+
+        Sprite mars(600,600, 90, 90, red, 8000, 0,"mars");
+        planets.push_back(mars);
+        sprites.push_back(mars);
+
+        Sprite phobos(500,500, 30, 30, darkorange, 150, 5,"phobos");
+        planets.push_back(phobos);
+        sprites.push_back(phobos);
+
+        Sprite deimos(500,700, 20, 20, red, 250, 5,"deimos");
+        planets.push_back(deimos);
+        sprites.push_back(deimos);
+
+        Sprite jupitor(500,700, 20, 20, brown, 10000, 0,"jupitor");
+        planets.push_back(jupitor);
+        sprites.push_back(jupitor);
+
+        Sprite saturn(500,700, 20, 20, red, 11000, 0,"saturn");
+        planets.push_back(saturn);
+        sprites.push_back(saturn);
+
+        Sprite uranus(500,700, 20, 20, lightblue, 12000, 0,"uranus");
+        planets.push_back(uranus);
+        sprites.push_back(uranus);
+
+        Sprite neptune(500,700, 20, 20, blue, 13500, 0,"neptune");
+        planets.push_back(neptune);
+        sprites.push_back(neptune);
+
+
+
+
+
+        // end planet definitions
+
+
+        std::vector<Sprite> stars1;
+        for(int i = 0; i<6000; i++)
         {
-            Planet newPlanet(i);
-            planets.push_back(newPlanet);
-            sprites.push_back(newPlanet); // add to list of sprites
+                    //// find better divider const than 4
+            Sprite newstar(rand() % (LEVEL_WIDTH/10), rand() % LEVEL_HEIGHT/10, 1, 1, {(rand() % 100)+155,(rand() % 100)+155,0}, 0, 0, "null");
+            newstar.setDepth((rand() % 30) + 10 );
+            stars1.push_back(newstar);
+        }
 
+        std::vector<Sprite> asteroids1;
+        for(int i = 0; i<7; i++)
+        {
+            Sprite newast(0,0, 10, 10, blue, 400, 0, std::to_string(i));
+            asteroids1.push_back(newast);
         }
 
 
+
+
+        // timer init
         Timer fpsTimer; // Timer object
         Timer capTimer;
         std::stringstream timeText; //In memory text stream
-
-        //Start counting frames per second
-		fpsTimer.start();
+		fpsTimer.start(); //Start counting frames per second
 		int countedFrames = 0;
+		// end timer init
 
 		//The camera area
 		SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
-		bool quit = false; //Main loop flag
+
 
 		std::thread t1(networkLoop);
 
-		while( !quit ) 	// Main game loop
+        bool quit = false; //Main loop flag
+		while( !quit ) 	// MAIN LOOP STARTS HERE
 		{
 
             //Start cap timer
@@ -176,42 +248,70 @@ int main( int argc, char* args[] )
                     camera.y = LEVEL_HEIGHT - camera.h;
                 }
 
+
+                // renders all stars
+                for (std::vector<Sprite>::size_type i = 0; i < stars1.size(); i++) stars1[i].render(camera.x,camera.y);
+
+                // renders all stars
+                for (std::vector<Sprite>::size_type i = 0; i < asteroids1.size(); i++) asteroids1[i].render(camera.x,camera.y);
+
                 //update sprites
                 hero1.update();
                 hero1.updateCompanions();
 
 
-
-
-
-                SDL_Rect newRect = changeAngle(planets[0].getRect(),planets[1].getRect(), 5);
-                planets[1].setXposition(newRect.x);
-                planets[1].setYposition(newRect.y);
-                newRect = changeAngle(planets[0].getRect(),planets[2].getRect(), 5);
-                planets[2].setXposition(newRect.x);
-                planets[2].setYposition(newRect.y);
-
-
-                for (std::vector<Planet>::size_type i = 0; i < planets.size(); i++)
+                for (std::vector<Sprite>::size_type i = 0; i < planets.size(); i++)
                 {
                     planets[i].update();
 
                     // just for fun ... planet lines
-                    SDL_SetRenderDrawColor(gRenderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
-                    SDL_RenderDrawLine(gRenderer, hero1.getXposition()+hero1.getWidth()/2 - camera.x, hero1.getYposition()+hero1.getHeight()/2 - camera.y,
+                    SDL_SetRenderDrawColor(gRenderer, planets[i].getRED(), planets[i].getGREEN(), planets[i].getBLUE(), SDL_ALPHA_OPAQUE);
+                    SDL_RenderDrawLine(gRenderer, planets[planets[i].getRotating()].getXposition()+planets[planets[i].getRotating()].getWidth()/2 - camera.x, planets[planets[i].getRotating()].getYposition()+planets[planets[i].getRotating()].getHeight()/2 - camera.y,
                                         planets[i].getXposition()+planets[i].getWidth()/2 - camera.x, planets[i].getYposition()+planets[i].getHeight()/2 - camera.y );
                     // end planet lines
 
+                    SDL_Rect newRect;
+                    if(i!=0)
+                    {
+                        newRect = changeAngle(planets[planets[i].getRotating()],planets[i], 0.2) ;
 
-                    SDL_Rect newRect = planets[i].getRect();
+                        planets[i].setXposition(newRect.x);
+                        planets[i].setYposition(newRect.y);
+
+                    }
+
+
+                    newRect = planets[i].getRect();
                     if (hero1.checkCollision(&newRect))
                     {
-                        planets[i].ifCollision();
+                        //planets[i].ifCollision();
                         hero1.collisionResponse(newRect);
 
 
                         filledCircleColor(gRenderer, hero1.getXposition() + hero1.getWidth()/2 - camera.x, hero1.getYposition() + hero1.getHeight()/2 - camera.y , 13, 0xFF0000FF);
                     }
+                }
+
+                for (std::vector<Sprite>::size_type i = 0; i < asteroids1.size(); i++)
+                {
+                    asteroids1[i].update();
+
+                    // just for fun ... planet lines
+                    SDL_SetRenderDrawColor(gRenderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
+                    SDL_RenderDrawLine(gRenderer, planets[planets[i].getRotating()].getXposition()+planets[planets[i].getRotating()].getWidth()/2 - camera.x, planets[planets[i].getRotating()].getYposition()+planets[planets[i].getRotating()].getHeight()/2 - camera.y,
+                                        planets[i].getXposition()+planets[i].getWidth()/2 - camera.x, planets[i].getYposition()+planets[i].getHeight()/2 - camera.y );
+                    // end planet lines
+
+                    SDL_Rect newRect;
+                    if(i!=0)
+                    {
+                        newRect = changeAngle(planets[asteroids1[i].getRotating()],asteroids1[i], 0.5* i);
+
+                        asteroids1[i].setXposition(newRect.x);
+                        asteroids1[i].setYposition(newRect.y);
+
+                    }
+
                 }
 
 
@@ -220,7 +320,7 @@ int main( int argc, char* args[] )
 
 
                 // render sprites after collision detection
-                for (std::vector<Planet>::size_type i = 0; i < planets.size(); i++)
+                for (std::vector<Sprite>::size_type i = 0; i < planets.size(); i++)
                 {
                     planets[i].render(camera.x,camera.y);
                 }
@@ -255,10 +355,10 @@ int main( int argc, char* args[] )
             gTextTexture.loadFromRenderedText( std::to_string(1000.f / capTimer.getTicks()) + " fps" , gFont12,  red );
             gTextTexture.render( 10, 25 );
 
-            gTextTexture.loadFromRenderedText( std::to_string( getRadius(hero1.getRect(),planets[0].getRect())), gFont12,  red );
+            gTextTexture.loadFromRenderedText( std::to_string( getRadius(hero1,planets[0])), gFont12,  red );
             gTextTexture.render( 10, 40 );
 
-            double theta = getTheta(hero1.getRect(),planets[0].getRect()) * 180.0/3.141593;;
+            double theta = getTheta(hero1,planets[0]) * 180.0/3.141593;;
             if (theta<0) theta+=360; // weird degree conversion, cant explain
 
             gTextTexture.loadFromRenderedText( std::to_string(theta), gFont12,  red );
@@ -269,7 +369,7 @@ int main( int argc, char* args[] )
                                             + std::to_string(hero1.getYvelocity())
                                             , gFont12,  red );
             gTextTexture.render( 10, 70 );
-            gTextTexture.loadFromRenderedText( DMSG, gFont12,  red );
+            gTextTexture.loadFromRenderedText( std::to_string(sprites.size()), gFont12,  red );
             gTextTexture.render( 10, 85 );
 
             // END DEBUG HUD section --->
@@ -279,12 +379,10 @@ int main( int argc, char* args[] )
             SDL_RenderPresent( gRenderer );
 
 
-		}  // end of main loop
+		}  // END MAIN LOOP HERE
 	}
 
-	//Free resources and close SDL
-	close();
-
+	close(); //Free resources and close SDL
 	return 0;
 }
 

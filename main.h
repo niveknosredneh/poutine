@@ -32,7 +32,6 @@
 #include "texture.h"
 #include "sprite.h"
 #include "hero.h"
-#include "enemy.h"
 #include "bullet.h"
 #include "io.h"
 #include "network.h"

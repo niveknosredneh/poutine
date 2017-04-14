@@ -1,6 +1,11 @@
 #include "main.h"
 #include "sprite.h"
 
+extern TTF_Font* gFont16;
+extern TTF_Font* gFont12;
+
+extern SDL_Color cyan;
+
 
 extern SDL_Renderer* gRenderer;
 
@@ -9,17 +14,19 @@ Acceleration (acc), deceleration (dec), and friction (frc) are added to Xsp;
 jump velocity (jmp) and gravity (grv) are added to Ysp
 */
 
+// default no arguments
 Sprite::Sprite()
 {
 	//Initialize
 	Width = 10;
 	Height = 10;
+	Depth = 1; // default
 
 	Mass = 1; // TODO
 
 	// position on screen, with origin in top left corner
-	Xposition = 50;
-	Yposition = 50;
+	Xposition = 5000;
+	Yposition = 5000;
 
 	// change in position per tick (px/tick)
 	Xvelocity = 0;
@@ -37,7 +44,35 @@ Sprite::Sprite()
 	GREEN = 0x00;
 	BLUE = 0x00;
 
+    label = "null";
 	collisionFlag = false;
+
+}
+
+Sprite::Sprite(int X, int Y, int W, int H, SDL_Color Colour, double radius, std::vector<Sprite>::size_type rotationPlanet, std::string name )
+{
+    Xposition = X;
+    Yposition = Y;
+    Width = W;
+    Height = H;
+    RED = Colour.r;
+    GREEN = Colour.g;
+    BLUE = Colour.b;
+    label = name;
+    Radius = radius;
+    Depth = 1; // default
+
+    RotatingAround = rotationPlanet;
+
+    SpriteRect = {Xposition,Yposition, Width, Height};
+
+    Xvelocity = 0;
+	Yvelocity = 0;
+    maxVelocity = 3;
+
+    Xacceleration = 0;
+	Yacceleration = 0;
+	maxAcceleration = 3;
 
 }
 
@@ -94,11 +129,24 @@ void Sprite::render(int camx, int camy)
 {
 
 		// render sprite
-        SDL_Rect SpriteRect = { Xposition-camx, Yposition-camy, Width, Height };
-		SDL_SetRenderDrawColor( gRenderer, RED, GREEN, BLUE, 0xFF );
-		SDL_RenderFillRect( gRenderer, &SpriteRect );
 
-        //SDL_RenderDrawRect( gRenderer, &SpriteRect ); //no fill
+        SDL_Rect SpriteRect = { Xposition - ( camx / Depth), Yposition - ( camy / Depth), Width, Height };
+
+		SDL_SetRenderDrawColor( gRenderer, RED, GREEN, BLUE, 0xFF );
+		if(Width==1) SDL_RenderFillRect( gRenderer, &SpriteRect ); // fill
+        else SDL_RenderDrawRect( gRenderer, &SpriteRect ); // no fill
+
+        filledCircleColor(gRenderer, Xposition + Width/2 - camx, Yposition + Height/2 - camy , Width*9/14, ((0xff) << 24) + ((BLUE & 0xff) << 16) + ((GREEN & 0xff) << 8) + (RED & 0xff));
+		if(label!="null")
+		{
+            gTextTexture.loadFromRenderedText(label, gFont16, cyan );
+            gTextTexture.render( Xposition + Width/2 - sizeof(label) - camx, Yposition - 15 - camy - 15);
+		}
+
+		//std::string position = std::to_string(Xvelocity) + "/" + std::to_string(Yvelocity) + "/" + std::to_string(Xposition) + "/" + std::to_string(Yposition);
+        //gTextTexture.loadFromRenderedText( position, gFont12, cyan );
+        //gTextTexture.render( Xposition + Width/2 - 40 - camx, Yposition + Height/2 - camy - 25);
+
 }
 
 
@@ -156,7 +204,13 @@ void Sprite::setCollision()
 
 SDL_Rect Sprite::getRect()
 {
+    SpriteRect = {Xposition,Yposition, Width, Height};
     return SpriteRect;
+}
+
+double Sprite::getRad()
+{
+    return Radius;
 }
 
 SDL_Rect Sprite::getLastRect()
@@ -244,6 +298,11 @@ void Sprite::invertYvelocity()
     Yvelocity *= -1;
 }
 
+std::vector<Sprite>::size_type Sprite::getRotating()
+{
+    return RotatingAround;
+}
+
 
 int Sprite::getHeight()
 {
@@ -262,6 +321,16 @@ int Sprite::getWidth()
 void Sprite::setWidth(int newWidth)
 {
 	Width = newWidth;
+
+}
+
+int Sprite::getDepth()
+{
+	return Depth;
+}
+void Sprite::setDepth(int newDepth)
+{
+	Depth = newDepth;
 
 }
 
