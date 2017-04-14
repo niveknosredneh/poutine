@@ -41,7 +41,7 @@ class Sprite
 	public:
 		//Initializes variables
 		Sprite();
-		Sprite(int X, int Y, int W, int H, SDL_Color, double radius, std::vector<Sprite>::size_type, std::string );
+		Sprite(int W, int H, SDL_Color, double radius, std::vector<Sprite>::size_type, std::string );
 
 		//Deallocates memory
 		~Sprite();
@@ -74,6 +74,8 @@ class Sprite
 
 		int getDepth();
         void setDepth(int newDepth);
+
+        SDL_Point getCentre();
 
 
 		//Gets image dimensions

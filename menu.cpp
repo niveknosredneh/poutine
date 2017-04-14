@@ -37,29 +37,47 @@ void Menu::render()
     }
 
 
-        gTextTexture.loadFromRenderedText( "P" , gFont24, {red.r,menuTimer, 0});
-        gTextTexture.render( SCREEN_WIDTH/3 + 5, SCREEN_HEIGHT/5);
+    gTextTexture.loadFromRenderedText( "O" , gFont24, darkgray);
+    gTextTexture.render( SCREEN_WIDTH/3 , SCREEN_HEIGHT/5);
 
-        gTextTexture.loadFromRenderedText( "I" , gFont24,  {menuTimer*0.25,menuTimer,blue.b});
-        gTextTexture.render( SCREEN_WIDTH/3 + 30, SCREEN_HEIGHT/5);
+    gTextTexture.loadFromRenderedText( "R" , gFont24,  darkgray);
+    gTextTexture.render( SCREEN_WIDTH/3 + 20, SCREEN_HEIGHT/5);
 
-        gTextTexture.loadFromRenderedText( "K" , gFont24,  green);
-        gTextTexture.render( SCREEN_WIDTH/3 + 50, SCREEN_HEIGHT/5);
+    gTextTexture.loadFromRenderedText( "B" , gFont24,  darkgray);
+    gTextTexture.render( SCREEN_WIDTH/3 + 40, SCREEN_HEIGHT/5);
 
-    if (!(menuTimer % 8))
-    {
-        gTextTexture.loadFromRenderedText( "S" , gFont24,  yellow);
-        gTextTexture.render( SCREEN_WIDTH/3 + 80, SCREEN_HEIGHT/5);
-    }
+    gTextTexture.loadFromRenderedText( "I" , gFont24,  darkgray);
+    gTextTexture.render( SCREEN_WIDTH/3 + 60, SCREEN_HEIGHT/5);
 
-        gTextTexture.loadFromRenderedText( "U" , gFont24,  cyan);
-        gTextTexture.render( SCREEN_WIDTH/3 + 107, SCREEN_HEIGHT/5);
+    gTextTexture.loadFromRenderedText( "T" , gFont24,  darkgray);
+    gTextTexture.render( SCREEN_WIDTH/3 + 80, SCREEN_HEIGHT/5);
 
-    if (!(menuTimer % 10))
-    {
-        gTextTexture.loadFromRenderedText( "L" , gFont24,  magenta);
-        gTextTexture.render( SCREEN_WIDTH/3 + 140, SCREEN_HEIGHT/5);
-    }
+    gTextTexture.loadFromRenderedText( "A" , gFont24,  darkgray);
+    gTextTexture.render( SCREEN_WIDTH/3 + 100, SCREEN_HEIGHT/5);
+
+    gTextTexture.loadFromRenderedText( "L" , gFont24,  darkgray);
+    gTextTexture.render( SCREEN_WIDTH/3 + 120, SCREEN_HEIGHT/5);
+
+    gTextTexture.loadFromRenderedText( "O" , gFont24, darkgray);
+    gTextTexture.render( SCREEN_WIDTH/3 , SCREEN_HEIGHT/5 + 35);
+
+    gTextTexture.loadFromRenderedText( "F" , gFont24,  darkgray);
+    gTextTexture.render( SCREEN_WIDTH/3 + 20, SCREEN_HEIGHT/5 + 35);
+
+    gTextTexture.loadFromRenderedText( "F" , gFont24,  darkgray);
+    gTextTexture.render( SCREEN_WIDTH/3 + 40, SCREEN_HEIGHT/5 + 35);
+
+    gTextTexture.loadFromRenderedText( "E" , gFont24,  darkgray);
+    gTextTexture.render( SCREEN_WIDTH/3 + 60, SCREEN_HEIGHT/5 + 35);
+
+    gTextTexture.loadFromRenderedText( "N" , gFont24,  darkgray);
+    gTextTexture.render( SCREEN_WIDTH/3 + 80, SCREEN_HEIGHT/5 + 35);
+
+    gTextTexture.loadFromRenderedText( "S" , gFont24,  darkgray);
+    gTextTexture.render( SCREEN_WIDTH/3 + 100, SCREEN_HEIGHT/5 + 35);
+
+    gTextTexture.loadFromRenderedText( "E" , gFont24,  darkgray);
+    gTextTexture.render( SCREEN_WIDTH/3 + 120, SCREEN_HEIGHT/5 + 35);
 
 
     menuTimer++;

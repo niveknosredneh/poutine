@@ -15,13 +15,13 @@ SDL_Window* gWindow = NULL;
 SDL_Renderer* gRenderer = NULL;
 
 //Screen dimension constants
-const int SCREEN_WIDTH = 1280;
-const int SCREEN_HEIGHT = 1024;
+const int SCREEN_WIDTH = 1920;
+const int SCREEN_HEIGHT = 1080;
 
-const int LEVEL_WIDTH = 20000;
-const int LEVEL_HEIGHT = 20000;
+const int LEVEL_WIDTH = 30000;
+const int LEVEL_HEIGHT = 30000;
 
-const int CAPPED_FPS = 15;
+const int CAPPED_FPS = 25;
 const int TICKS_PER_FRAME = 1000 / CAPPED_FPS;
 
 SDL_Color red   = {108, 26, 9};
@@ -67,74 +67,103 @@ int main( int argc, char* args[] )
         // begin Planet definitions
         std::vector<Sprite> planets;
 
-        Sprite sol(5000,5000, 7000, 7000, yellow, 0, 0, "sol");
+        Sprite sol(7000, 7000, yellow, 0, 0, "sol");
+        sol.setXposition(10000);
+        sol.setYposition(10000);
         planets.push_back(sol);
         sprites.push_back(sol); // add to list of sprites
 
-        Sprite mercury(500,700, 25, 25, white, 4000, 0,"mercury");
+        Sprite mercury(24, 24, white, 5000, 0,"mercury");
         planets.push_back(mercury);
         sprites.push_back(mercury);
 
-        Sprite venus(500,700, 80, 80, orange, 5000, 0,"venus");
+        Sprite venus(60, 60, orange, 6000, 0,"venus");
         planets.push_back(venus);
         sprites.push_back(venus);
 
-        Sprite terra(500,700, 70, 70, blue, 6600, 0,"terra");
+        Sprite terra(63, 63, blue, 7200, 0,"terra");
         planets.push_back(terra);
         sprites.push_back(terra);
 
-        Sprite luna(500,700, 8, 8, yellow, 100, 3,"luna");
+        Sprite luna(17, 17, yellow, 250, 3,"luna");
         planets.push_back(luna);
         sprites.push_back(luna);
 
-        Sprite mars(600,600, 90, 90, red, 8000, 0,"mars");
+        Sprite mars(33, 33, red, 8000, 0,"mars");
         planets.push_back(mars);
         sprites.push_back(mars);
 
-        Sprite phobos(500,500, 30, 30, darkorange, 150, 5,"phobos");
+        Sprite phobos(30, 30, darkorange, 150, 5,"phobos");
         planets.push_back(phobos);
         sprites.push_back(phobos);
 
-        Sprite deimos(500,700, 20, 20, red, 250, 5,"deimos");
+        Sprite deimos(20, 20, red, 250, 5,"deimos");
         planets.push_back(deimos);
         sprites.push_back(deimos);
 
-        Sprite jupitor(500,700, 20, 20, brown, 10000, 0,"jupitor");
+        Sprite jupitor(700, 700, brown, 9000, 0,"jupitor");
         planets.push_back(jupitor);
         sprites.push_back(jupitor);
 
-        Sprite saturn(500,700, 20, 20, red, 11000, 0,"saturn");
+        Sprite ganymede(10, 10, brown, 1600, 8,"ganymede");
+        planets.push_back(ganymede);
+        sprites.push_back(ganymede);
+
+        Sprite europa(10, 10, brown, 1500, 8,"europa");
+        planets.push_back(europa);
+        sprites.push_back(europa);
+
+        Sprite callisto(10, 10, brown, 1400, 8,"callisto");
+        planets.push_back(callisto);
+        sprites.push_back(callisto);
+
+        Sprite io(10, 10, brown, 1300, 8,"io");
+        planets.push_back(io);
+        sprites.push_back(io);
+
+        Sprite saturn(580, 580, red, 10000, 0,"saturn");
         planets.push_back(saturn);
         sprites.push_back(saturn);
 
-        Sprite uranus(500,700, 20, 20, lightblue, 12000, 0,"uranus");
+        Sprite titan(10, 10, red, 600, 13,"titan");
+        planets.push_back(titan);
+        sprites.push_back(titan);
+
+        Sprite uranus(250, 250, lightblue, 11100, 0,"uranus");
         planets.push_back(uranus);
         sprites.push_back(uranus);
 
-        Sprite neptune(500,700, 20, 20, blue, 13500, 0,"neptune");
+        Sprite neptune(240, 240, blue, 12200, 0,"neptune");
         planets.push_back(neptune);
         sprites.push_back(neptune);
 
-
-
-
+        Sprite triton(13, 13, blue, 400, 16,"triton");
+        planets.push_back(triton);
+        sprites.push_back(triton);
 
         // end planet definitions
 
 
         std::vector<Sprite> stars1;
-        for(int i = 0; i<6000; i++)
+        for(int i = 0; i<1500; i++)
         {
                     //// find better divider const than 4
-            Sprite newstar(rand() % (LEVEL_WIDTH/10), rand() % LEVEL_HEIGHT/10, 1, 1, {(rand() % 100)+155,(rand() % 100)+155,0}, 0, 0, "null");
+            Sprite newstar;
+            newstar.setXposition(rand() % LEVEL_WIDTH/10);
+            newstar.setYposition(rand() % LEVEL_HEIGHT/10);
+            newstar.setWidth(1);
+            newstar.setHeight(1);
+            newstar.setRED((rand() % 100)+155);
+            newstar.setGREEN((rand() % 100)+155);
             newstar.setDepth((rand() % 30) + 10 );
             stars1.push_back(newstar);
         }
 
         std::vector<Sprite> asteroids1;
-        for(int i = 0; i<7; i++)
+        for(int i = 0; i<370; i++)
         {
-            Sprite newast(0,0, 10, 10, blue, 400, 0, std::to_string(i));
+            int diam = rand() % 10 + 10;
+            Sprite newast(diam, diam, blue, 8500 + rand() % 100, 0, std::to_string(i));
             asteroids1.push_back(newast);
         }
 
@@ -174,6 +203,11 @@ int main( int argc, char* args[] )
             SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
             SDL_RenderClear( gRenderer );
 
+            // renders all stars
+            for (std::vector<Sprite>::size_type i = 0; i < stars1.size(); i++) stars1[i].render(camera.x,camera.y);
+
+
+
             if(mainState==QUIT)
             {
                 quit=true;
@@ -197,6 +231,9 @@ int main( int argc, char* args[] )
                 mainMenu.render();
 
                 SDL_Delay(80);
+
+                camera.x+=15;
+                camera.y+=5;
 
             }
 
@@ -249,10 +286,7 @@ int main( int argc, char* args[] )
                 }
 
 
-                // renders all stars
-                for (std::vector<Sprite>::size_type i = 0; i < stars1.size(); i++) stars1[i].render(camera.x,camera.y);
 
-                // renders all stars
                 for (std::vector<Sprite>::size_type i = 0; i < asteroids1.size(); i++) asteroids1[i].render(camera.x,camera.y);
 
                 //update sprites
@@ -264,21 +298,24 @@ int main( int argc, char* args[] )
                 {
                     planets[i].update();
 
-                    // just for fun ... planet lines
-                    SDL_SetRenderDrawColor(gRenderer, planets[i].getRED(), planets[i].getGREEN(), planets[i].getBLUE(), SDL_ALPHA_OPAQUE);
-                    SDL_RenderDrawLine(gRenderer, planets[planets[i].getRotating()].getXposition()+planets[planets[i].getRotating()].getWidth()/2 - camera.x, planets[planets[i].getRotating()].getYposition()+planets[planets[i].getRotating()].getHeight()/2 - camera.y,
-                                        planets[i].getXposition()+planets[i].getWidth()/2 - camera.x, planets[i].getYposition()+planets[i].getHeight()/2 - camera.y );
-                    // end planet lines
-
                     SDL_Rect newRect;
                     if(i!=0)
                     {
-                        newRect = changeAngle(planets[planets[i].getRotating()],planets[i], 0.2) ;
+                        if(planets[i].getRotating()==0) newRect = changeAngle(planets[planets[i].getRotating()],planets[i], 0.02) ;
+                        else newRect = changeAngle(planets[planets[i].getRotating()],planets[i], 1) ;
 
                         planets[i].setXposition(newRect.x);
                         planets[i].setYposition(newRect.y);
 
                     }
+
+                    // just for fun ... planet lines
+                    //filledCircleColor(gRenderer, planets[planets[i].getRotating()].getCentre().x - camera.x, planets[planets[i].getRotating()].getCentre().y - camera.y , planets[i].getRad(), ((0xff) << 24) + ((planets[i].getBLUE() & 0xff) << 16) + ((planets[i].getGREEN() & 0xff) << 8) + (planets[i].getRED() & 0xff));
+                    SDL_SetRenderDrawColor(gRenderer, planets[i].getRED(), planets[i].getGREEN(), planets[i].getBLUE(), SDL_ALPHA_OPAQUE);
+                    SDL_RenderDrawLine(gRenderer,
+                                        planets[planets[i].getRotating()].getCentre().x - camera.x, planets[planets[i].getRotating()].getCentre().y - camera.y,
+                                        planets[i].getCentre().x - camera.x, planets[i].getCentre().y - camera.y );
+                    // end planet lines
 
 
                     newRect = planets[i].getRect();
@@ -288,7 +325,7 @@ int main( int argc, char* args[] )
                         hero1.collisionResponse(newRect);
 
 
-                        filledCircleColor(gRenderer, hero1.getXposition() + hero1.getWidth()/2 - camera.x, hero1.getYposition() + hero1.getHeight()/2 - camera.y , 13, 0xFF0000FF);
+                        circleColor(gRenderer, hero1.getXposition() + hero1.getWidth()/2 - camera.x, hero1.getYposition() + hero1.getHeight()/2 - camera.y , 13, 0xFF0000FF);
                     }
                 }
 
@@ -296,28 +333,12 @@ int main( int argc, char* args[] )
                 {
                     asteroids1[i].update();
 
-                    // just for fun ... planet lines
-                    SDL_SetRenderDrawColor(gRenderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
-                    SDL_RenderDrawLine(gRenderer, planets[planets[i].getRotating()].getXposition()+planets[planets[i].getRotating()].getWidth()/2 - camera.x, planets[planets[i].getRotating()].getYposition()+planets[planets[i].getRotating()].getHeight()/2 - camera.y,
-                                        planets[i].getXposition()+planets[i].getWidth()/2 - camera.x, planets[i].getYposition()+planets[i].getHeight()/2 - camera.y );
-                    // end planet lines
-
                     SDL_Rect newRect;
-                    if(i!=0)
-                    {
-                        newRect = changeAngle(planets[asteroids1[i].getRotating()],asteroids1[i], 0.5* i);
+                    newRect = changeAngle(planets[asteroids1[i].getRotating()],asteroids1[i], 3);
 
-                        asteroids1[i].setXposition(newRect.x);
-                        asteroids1[i].setYposition(newRect.y);
-
-                    }
-
+                    asteroids1[i].setXposition(newRect.x);
+                    asteroids1[i].setYposition(newRect.y);
                 }
-
-
-
-
-
 
                 // render sprites after collision detection
                 for (std::vector<Sprite>::size_type i = 0; i < planets.size(); i++)

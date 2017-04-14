@@ -59,7 +59,7 @@ bool eventHandler()
 	}
     if( currentKeyStates[ SDL_SCANCODE_R ] )
 	{
-		hero1.spawn(4800,4800);
+		hero1.spawn(9800,9800);
 	}
     if( currentKeyStates[ SDL_SCANCODE_P ] )
 	{

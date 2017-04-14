@@ -34,7 +34,7 @@ bool init()
 		}
 
 		//Create window
-		gWindow = SDL_CreateWindow( " ~ PIKSUL ~ ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
+		gWindow = SDL_CreateWindow( " ~ ORBITAL OFFENSE ~ ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_FULLSCREEN );
 		if( gWindow == NULL )
 		{
 			printf( "SDL Error: %s\n", SDL_GetError() );
@@ -42,7 +42,7 @@ bool init()
 		}
 		else
 		{
-			//Create renderer for window
+  			//Create renderer for window
 			gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED );
 			if( gRenderer == NULL )
 			{

@@ -31,7 +31,7 @@ Sprite::Sprite()
 	// change in position per tick (px/tick)
 	Xvelocity = 0;
 	Yvelocity = 0;
-	maxVelocity = 10;
+	maxVelocity = 40;
 
 	// change in velocity per tick (px/tick^2)
 	Xacceleration = 0;
@@ -49,10 +49,10 @@ Sprite::Sprite()
 
 }
 
-Sprite::Sprite(int X, int Y, int W, int H, SDL_Color Colour, double radius, std::vector<Sprite>::size_type rotationPlanet, std::string name )
+Sprite::Sprite(int W, int H, SDL_Color Colour, double radius, std::vector<Sprite>::size_type rotationPlanet, std::string name )
 {
-    Xposition = X;
-    Yposition = Y;
+    Xposition = rand() % LEVEL_WIDTH;
+    Yposition = rand() % LEVEL_HEIGHT;
     Width = W;
     Height = H;
     RED = Colour.r;
@@ -134,13 +134,14 @@ void Sprite::render(int camx, int camy)
 
 		SDL_SetRenderDrawColor( gRenderer, RED, GREEN, BLUE, 0xFF );
 		if(Width==1) SDL_RenderFillRect( gRenderer, &SpriteRect ); // fill
-        else SDL_RenderDrawRect( gRenderer, &SpriteRect ); // no fill
+        //else SDL_RenderDrawRect( gRenderer, &SpriteRect ); // no fill
 
-        filledCircleColor(gRenderer, Xposition + Width/2 - camx, Yposition + Height/2 - camy , Width*9/14, ((0xff) << 24) + ((BLUE & 0xff) << 16) + ((GREEN & 0xff) << 8) + (RED & 0xff));
+        filledCircleColor(gRenderer, getCentre().x - camx, getCentre().y - camy , Width*9/14, ((0xff) << 24) + ((BLUE & 0xff) << 16) + ((GREEN & 0xff) << 8) + (RED & 0xff));
+
 		if(label!="null")
 		{
             gTextTexture.loadFromRenderedText(label, gFont16, cyan );
-            gTextTexture.render( Xposition + Width/2 - sizeof(label) - camx, Yposition - 15 - camy - 15);
+            gTextTexture.render( getCentre().x - sizeof(label) - camx, Yposition - 15 - camy - 15);
 		}
 
 		//std::string position = std::to_string(Xvelocity) + "/" + std::to_string(Yvelocity) + "/" + std::to_string(Xposition) + "/" + std::to_string(Yposition);
@@ -211,6 +212,12 @@ SDL_Rect Sprite::getRect()
 double Sprite::getRad()
 {
     return Radius;
+}
+
+SDL_Point Sprite::getCentre()
+{
+    SDL_Point centre = {Xposition+Width/2,Yposition+Height/2};
+    return centre;
 }
 
 SDL_Rect Sprite::getLastRect()
