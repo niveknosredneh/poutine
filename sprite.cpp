@@ -128,20 +128,26 @@ void Sprite::update()
 void Sprite::render(int camx, int camy)
 {
 
-		// render sprite
+        double miniDivX = LEVEL_WIDTH/SCREEN_WIDTH;
+        double miniDivY = LEVEL_HEIGHT/SCREEN_HEIGHT;
 
+		// render sprite
         SDL_Rect SpriteRect = { Xposition - ( camx / Depth), Yposition - ( camy / Depth), Width, Height };
 
 		SDL_SetRenderDrawColor( gRenderer, RED, GREEN, BLUE, 0xFF );
-		if(Width==1) SDL_RenderFillRect( gRenderer, &SpriteRect ); // fill
-        //else SDL_RenderDrawRect( gRenderer, &SpriteRect ); // no fill
+		if(Width==1) SDL_RenderFillRect( gRenderer, &SpriteRect ); // for stars
 
-        filledCircleColor(gRenderer, getCentre().x - camx, getCentre().y - camy , Width*9/14, ((0xff) << 24) + ((BLUE & 0xff) << 16) + ((GREEN & 0xff) << 8) + (RED & 0xff));
+        // if main menu, make mini map, else render normally
+        else if(mainState==MAIN_MENU&&Width/miniDivY<1) filledCircleColor(gRenderer, (getCentre().x)/miniDivX, (getCentre().y)/miniDivY , 1, ((0xff) << 24) + ((BLUE & 0xff) << 16) + ((GREEN & 0xff) << 8) + (RED & 0xff));
+		else if(mainState==MAIN_MENU) filledCircleColor(gRenderer, (getCentre().x)/miniDivX, (getCentre().y)/miniDivY , (Width*9/14)/ miniDivY, ((0xff) << 24) + ((BLUE & 0xff) << 16) + ((GREEN & 0xff) << 8) + (RED & 0xff));
+        // finally, if not in mini map mode:
+        else if(mainState!=MAIN_MENU) filledCircleColor(gRenderer, getCentre().x - camx, getCentre().y - camy , Width*9/14, ((0xff) << 24) + ((BLUE & 0xff) << 16) + ((GREEN & 0xff) << 8) + (RED & 0xff));
 
 		if(label!="null")
 		{
             gTextTexture.loadFromRenderedText(label, gFont16, cyan );
-            gTextTexture.render( getCentre().x - sizeof(label) - camx, Yposition - 15 - camy - 15);
+            if(mainState==MAIN_MENU) gTextTexture.render( getCentre().x / miniDivX, Yposition / miniDivY);
+            else gTextTexture.render( getCentre().x - sizeof(label) - camx, Yposition - 15 - camy - 15);
 		}
 
 		//std::string position = std::to_string(Xvelocity) + "/" + std::to_string(Yvelocity) + "/" + std::to_string(Xposition) + "/" + std::to_string(Yposition);

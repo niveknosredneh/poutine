@@ -163,7 +163,7 @@ int main( int argc, char* args[] )
         for(int i = 0; i<370; i++)
         {
             int diam = rand() % 10 + 10;
-            Sprite newast(diam, diam, blue, 8500 + rand() % 100, 0, std::to_string(i));
+            Sprite newast(diam, diam, blue, 8500 + rand() % 100, 0, "null");
             asteroids1.push_back(newast);
         }
 
@@ -203,9 +203,73 @@ int main( int argc, char* args[] )
             SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
             SDL_RenderClear( gRenderer );
 
-            // renders all stars
-            for (std::vector<Sprite>::size_type i = 0; i < stars1.size(); i++) stars1[i].render(camera.x,camera.y);
+            // where to place vision
+            camera.x =  hero1.getXposition() - SCREEN_WIDTH/2;
+            camera.y =  hero1.getYposition() - SCREEN_HEIGHT/2;
 
+            //Keep the camera in bounds
+            if( camera.x < 0 )
+            {
+                camera.x = 0;
+            }
+            if( camera.y < 0 )
+            {
+                camera.y = 0;
+            }
+            if( camera.x > LEVEL_WIDTH - camera.w )
+            {
+                camera.x = LEVEL_WIDTH - camera.w;
+            }
+            if( camera.y > LEVEL_HEIGHT - camera.h )
+            {
+                camera.y = LEVEL_HEIGHT - camera.h;
+            }
+
+
+
+            // renders all asteroids
+            for (std::vector<Sprite>::size_type i = 0; i < asteroids1.size(); i++)
+            {
+                    asteroids1[i].update();
+
+                    SDL_Rect newRect;
+                    newRect = changeAngle(planets[asteroids1[i].getRotating()],asteroids1[i], 0.05);
+
+                    asteroids1[i].setXposition(newRect.x);
+                    asteroids1[i].setYposition(newRect.y);
+
+                    asteroids1[i].render(camera.x,camera.y);
+            }
+
+            for (std::vector<Sprite>::size_type i = 0; i < planets.size(); i++)
+            {
+                planets[i].update();
+
+                SDL_Rect newRect;
+                if(i!=0)
+                {
+                    if(planets[i].getRotating()==0) newRect = changeAngle(planets[planets[i].getRotating()],planets[i], 0.2) ;
+                    else newRect = changeAngle(planets[planets[i].getRotating()],planets[i], 5) ;
+
+                    planets[i].setXposition(newRect.x);
+                    planets[i].setYposition(newRect.y);
+
+                }
+
+                planets[i].render(camera.x,camera.y);
+
+                newRect = planets[i].getRect();
+                if (hero1.checkCollision(&newRect))
+                {
+                    //planets[i].ifCollision();
+                    hero1.collisionResponse(newRect);
+
+                    circleColor(gRenderer, hero1.getXposition() + hero1.getWidth()/2 - camera.x, hero1.getYposition() + hero1.getHeight()/2 - camera.y , 13, 0xFF0000FF);
+                }
+            }
+
+
+            // !! everything before this point inside the main loop gets executed regardless of game state !!
 
 
             if(mainState==QUIT)
@@ -228,12 +292,12 @@ int main( int argc, char* args[] )
 		    if(mainState == MAIN_MENU)
             {
 
+                camera.x = 0;
+                camera.y = 0;
+
+                SDL_Delay(30);
+
                 mainMenu.render();
-
-                SDL_Delay(80);
-
-                camera.x+=15;
-                camera.y+=5;
 
             }
 
@@ -261,89 +325,19 @@ int main( int argc, char* args[] )
             if(mainState == LEVEL1)
             {
 
+                // renders all stars
+                for (std::vector<Sprite>::size_type i = 0; i < stars1.size(); i++) stars1[i].render(camera.x,camera.y);
 
-                // where to place vision
-                camera.x =  hero1.getXposition() - SCREEN_WIDTH/2;
-                camera.y =  hero1.getYposition() - SCREEN_HEIGHT/2;
-
-
-                //Keep the camera in bounds
-                if( camera.x < 0 )
-                {
-                    camera.x = 0;
-                }
-                if( camera.y < 0 )
-                {
-                    camera.y = 0;
-                }
-                if( camera.x > LEVEL_WIDTH - camera.w )
-                {
-                    camera.x = LEVEL_WIDTH - camera.w;
-                }
-                if( camera.y > LEVEL_HEIGHT - camera.h )
-                {
-                    camera.y = LEVEL_HEIGHT - camera.h;
-                }
-
-
-
-                for (std::vector<Sprite>::size_type i = 0; i < asteroids1.size(); i++) asteroids1[i].render(camera.x,camera.y);
 
                 //update sprites
                 hero1.update();
                 hero1.updateCompanions();
 
 
-                for (std::vector<Sprite>::size_type i = 0; i < planets.size(); i++)
-                {
-                    planets[i].update();
-
-                    SDL_Rect newRect;
-                    if(i!=0)
-                    {
-                        if(planets[i].getRotating()==0) newRect = changeAngle(planets[planets[i].getRotating()],planets[i], 0.02) ;
-                        else newRect = changeAngle(planets[planets[i].getRotating()],planets[i], 1) ;
-
-                        planets[i].setXposition(newRect.x);
-                        planets[i].setYposition(newRect.y);
-
-                    }
-
-                    // just for fun ... planet lines
-                    //filledCircleColor(gRenderer, planets[planets[i].getRotating()].getCentre().x - camera.x, planets[planets[i].getRotating()].getCentre().y - camera.y , planets[i].getRad(), ((0xff) << 24) + ((planets[i].getBLUE() & 0xff) << 16) + ((planets[i].getGREEN() & 0xff) << 8) + (planets[i].getRED() & 0xff));
-                    SDL_SetRenderDrawColor(gRenderer, planets[i].getRED(), planets[i].getGREEN(), planets[i].getBLUE(), SDL_ALPHA_OPAQUE);
-                    SDL_RenderDrawLine(gRenderer,
-                                        planets[planets[i].getRotating()].getCentre().x - camera.x, planets[planets[i].getRotating()].getCentre().y - camera.y,
-                                        planets[i].getCentre().x - camera.x, planets[i].getCentre().y - camera.y );
-                    // end planet lines
-
-
-                    newRect = planets[i].getRect();
-                    if (hero1.checkCollision(&newRect))
-                    {
-                        //planets[i].ifCollision();
-                        hero1.collisionResponse(newRect);
-
-
-                        circleColor(gRenderer, hero1.getXposition() + hero1.getWidth()/2 - camera.x, hero1.getYposition() + hero1.getHeight()/2 - camera.y , 13, 0xFF0000FF);
-                    }
-                }
-
-                for (std::vector<Sprite>::size_type i = 0; i < asteroids1.size(); i++)
-                {
-                    asteroids1[i].update();
-
-                    SDL_Rect newRect;
-                    newRect = changeAngle(planets[asteroids1[i].getRotating()],asteroids1[i], 3);
-
-                    asteroids1[i].setXposition(newRect.x);
-                    asteroids1[i].setYposition(newRect.y);
-                }
-
                 // render sprites after collision detection
                 for (std::vector<Sprite>::size_type i = 0; i < planets.size(); i++)
                 {
-                    planets[i].render(camera.x,camera.y);
+
                 }
 
 
@@ -390,7 +384,7 @@ int main( int argc, char* args[] )
                                             + std::to_string(hero1.getYvelocity())
                                             , gFont12,  red );
             gTextTexture.render( 10, 70 );
-            gTextTexture.loadFromRenderedText( std::to_string(sprites.size()), gFont12,  red );
+            gTextTexture.loadFromRenderedText( "camera: " + std::to_string(camera.x) + "," + std::to_string(camera.y), gFont12,  red );
             gTextTexture.render( 10, 85 );
 
             // END DEBUG HUD section --->
