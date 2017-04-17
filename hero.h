@@ -6,13 +6,11 @@ class Hero : public Sprite
 	private:
 
         std::vector<Bullet> bullets;
-        std::vector<Sprite> companions;
+
 
         unsigned long bulletTimer;
 
-        std::vector<Sprite>::size_type companionIterator;
-        bool companionPower;
-        std::vector<Sprite> companionColliders;
+
 
 
 	public:
@@ -32,9 +30,7 @@ class Hero : public Sprite
 
 		void renderBullets(int,int);
 
-		void updateCompanions();
 
-		void iterateCompanions();
 
 		std::vector<Bullet> getBullets();
 		bool checkCollision(SDL_Rect* rect);

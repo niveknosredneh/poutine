@@ -49,7 +49,7 @@ Sprite::Sprite()
 
 }
 
-Sprite::Sprite(int W, int H, SDL_Color Colour, double radius, std::vector<Sprite>::size_type rotationPlanet, std::string name )
+Sprite::Sprite(int W, int H, SDL_Color Colour, double radius, int period, std::vector<Sprite>::size_type rotationPlanet, std::string name )
 {
     Xposition = rand() % LEVEL_WIDTH;
     Yposition = rand() % LEVEL_HEIGHT;
@@ -61,6 +61,8 @@ Sprite::Sprite(int W, int H, SDL_Color Colour, double radius, std::vector<Sprite
     label = name;
     Radius = radius;
     Depth = 1; // default
+    Period = period;
+    Angle = (double)(rand() % 360);
 
     RotatingAround = rotationPlanet;
 
@@ -135,18 +137,24 @@ void Sprite::render(int camx, int camy)
         SDL_Rect SpriteRect = { Xposition - ( camx / Depth), Yposition - ( camy / Depth), Width, Height };
 
 		SDL_SetRenderDrawColor( gRenderer, RED, GREEN, BLUE, 0xFF );
-		if(Width==1) SDL_RenderFillRect( gRenderer, &SpriteRect ); // for stars
+		if(Width==1&&mainState!=MAIN_MENU) SDL_RenderFillRect( gRenderer, &SpriteRect ); // for stars
 
         // if main menu, make mini map, else render normally
-        else if(mainState==MAIN_MENU&&Width/miniDivY<1) filledCircleColor(gRenderer, (getCentre().x)/miniDivX, (getCentre().y)/miniDivY , 1, ((0xff) << 24) + ((BLUE & 0xff) << 16) + ((GREEN & 0xff) << 8) + (RED & 0xff));
+        else if(mainState==MAIN_MENU && Width/miniDivY<1) filledCircleColor(gRenderer, (getCentre().x)/miniDivX, (getCentre().y)/miniDivY , 1, ((0xff) << 24) + ((BLUE & 0xff) << 16) + ((GREEN & 0xff) << 8) + (RED & 0xff));
 		else if(mainState==MAIN_MENU) filledCircleColor(gRenderer, (getCentre().x)/miniDivX, (getCentre().y)/miniDivY , (Width*9/14)/ miniDivY, ((0xff) << 24) + ((BLUE & 0xff) << 16) + ((GREEN & 0xff) << 8) + (RED & 0xff));
         // finally, if not in mini map mode:
-        else if(mainState!=MAIN_MENU) filledCircleColor(gRenderer, getCentre().x - camx, getCentre().y - camy , Width*9/14, ((0xff) << 24) + ((BLUE & 0xff) << 16) + ((GREEN & 0xff) << 8) + (RED & 0xff));
+        else if(mainState!=MAIN_MENU && (Xposition-camx) < SCREEN_WIDTH && (Xposition-camx) > 0 && (Yposition-camy) < SCREEN_HEIGHT && (Yposition-camy))
+            filledCircleColor(gRenderer, getCentre().x - camx, getCentre().y - camy , Width*9/14, ((0xff) << 24) + ((BLUE & 0xff) << 16) + ((GREEN & 0xff) << 8) + (RED & 0xff));
+
+        // trying to do in game mini map
+        if(mainState==LEVEL1 && Width/(miniDivY*6)<1) SDL_RenderDrawPoint(gRenderer, ((getCentre().x)/miniDivX)/6 + 1600, ((getCentre().y)/miniDivY)/6 );
+        else if(mainState==LEVEL1) filledCircleColor(gRenderer, ((getCentre().x)/miniDivX)/6 + 1600, ((getCentre().y)/miniDivY)/6 , ((Width*9/14)/ miniDivY*1.18)/6, ((0xff) << 24) + ((BLUE & 0xff) << 16) + ((GREEN & 0xff) << 8) + (RED & 0xff));
+
 
 		if(label!="null")
 		{
             gTextTexture.loadFromRenderedText(label, gFont16, cyan );
-            if(mainState==MAIN_MENU) gTextTexture.render( getCentre().x / miniDivX, Yposition / miniDivY);
+            if(mainState==MAIN_MENU && RotatingAround==0) gTextTexture.render( getCentre().x / miniDivX, Yposition / miniDivY);
             else gTextTexture.render( getCentre().x - sizeof(label) - camx, Yposition - 15 - camy - 15);
 		}
 
@@ -218,6 +226,16 @@ SDL_Rect Sprite::getRect()
 double Sprite::getRad()
 {
     return Radius;
+}
+
+double Sprite::getAngle()
+{
+    return Angle;
+}
+
+void Sprite::setAngle(double newAngle)
+{
+    Angle = newAngle;
 }
 
 SDL_Point Sprite::getCentre()
@@ -316,6 +334,10 @@ std::vector<Sprite>::size_type Sprite::getRotating()
     return RotatingAround;
 }
 
+int Sprite::getPeriod()
+{
+    return Period;
+}
 
 int Sprite::getHeight()
 {

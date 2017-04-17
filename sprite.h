@@ -17,6 +17,10 @@ class Sprite
 
 		int Mass; // TODO
 		std::vector<Sprite>::size_type RotatingAround;
+		int Period;
+        double Radius;
+        double Angle;
+        bool isClockwise;
 
 		int Xposition; //top left coordinate of rectangle
 		int Yposition;
@@ -36,12 +40,12 @@ class Sprite
 		bool collisionFlag;
 
 		std::string label;
-		double Radius;
+
 
 	public:
 		//Initializes variables
 		Sprite();
-		Sprite(int W, int H, SDL_Color, double radius, std::vector<Sprite>::size_type, std::string );
+		Sprite(int W, int H, SDL_Color, double radius, int period, std::vector<Sprite>::size_type, std::string );
 
 		//Deallocates memory
 		~Sprite();
@@ -65,6 +69,7 @@ class Sprite
 
 		double getRad();
 		std::vector<Sprite>::size_type getRotating();
+		int getPeriod();
 
 		//Gets image dimensions
 		int getWidth();
@@ -74,6 +79,9 @@ class Sprite
 
 		int getDepth();
         void setDepth(int newDepth);
+
+        double getAngle();
+        void setAngle(double);
 
         SDL_Point getCentre();
 

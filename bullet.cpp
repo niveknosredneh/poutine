@@ -5,12 +5,31 @@
 
 Bullet::Bullet(int ticks)
 {
-    RED = 255;
-    GREEN = 255;
-    BLUE = 255;
+	//Initialize
+	Width = 2;
+	Height = 2;
+	Depth = 1; // default
 
-    Width = 4;
-    Height = 4;
+	Mass = 1; // TODO
+
+	// change in position per tick (px/tick)
+	Xvelocity = 1;
+	Yvelocity = 1;
+	maxVelocity = 40;
+
+	// change in velocity per tick (px/tick^2)
+	Xacceleration = 0;
+	Yacceleration = 0;
+	maxAcceleration = 5;
+
+	SpriteRect = {Xposition,Yposition, Width, Height};
+
+	RED =  0xff;
+	GREEN = 0x00;
+	BLUE = 0x00;
+
+    label = "null";
+	collisionFlag = false;
 
 	lifetime = ticks;
 

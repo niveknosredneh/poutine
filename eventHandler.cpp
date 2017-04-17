@@ -6,10 +6,14 @@ bool eventHandler()
 
 	const Uint8* currentKeyStates = SDL_GetKeyboardState( NULL );
 
+    // ESCAPE
     if( currentKeyStates[ SDL_SCANCODE_ESCAPE ] )
 	{
 		mainState = MAIN_MENU;
 	}
+
+
+
 	if( currentKeyStates[ SDL_SCANCODE_LCTRL ] )
 	{
 		hero1.jump();
@@ -18,6 +22,10 @@ bool eventHandler()
 	{
 		hero1.setYvelocity(0);
 	}
+
+
+
+    // UP DOWN LEFT RIGHT
 	if( currentKeyStates[ SDL_SCANCODE_UP ] )
 	{
 	    if(mainState==MAIN_MENU)
@@ -44,6 +52,10 @@ bool eventHandler()
 	{
 		hero1.moveRight();
 	}
+
+
+
+
     if( currentKeyStates[ SDL_SCANCODE_SPACE ] )
 	{
 		hero1.shoot();
@@ -57,13 +69,35 @@ bool eventHandler()
 		else if(menuSelector==3) mainState = QUIT;
 
 	}
-    if( currentKeyStates[ SDL_SCANCODE_R ] )
+
+
+
+
+    if( currentKeyStates[ SDL_SCANCODE_W ] )
 	{
-		hero1.spawn(9800,9800);
+
 	}
-    if( currentKeyStates[ SDL_SCANCODE_P ] )
+    if( currentKeyStates[ SDL_SCANCODE_A ] )
+	{
+
+	}
+    if( currentKeyStates[ SDL_SCANCODE_S ] )
+	{
+
+	}
+    if( currentKeyStates[ SDL_SCANCODE_D ] )
+	{
+
+	}
+
+	// Function keys
+    if( currentKeyStates[ SDL_SCANCODE_F10 ] )
 	{
         audioToggleBG();
+	}
+    if( currentKeyStates[ SDL_SCANCODE_F9 ] )
+	{
+        isDebug = !isDebug;
 	}
 	return true;
 
