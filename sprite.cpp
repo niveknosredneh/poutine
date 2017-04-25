@@ -4,77 +4,62 @@
 extern TTF_Font* gFont16;
 extern TTF_Font* gFont12;
 
-extern SDL_Color cyan;
+extern SDL_Color white;
+extern SDL_Rect camera;
 
 
 extern SDL_Renderer* gRenderer;
 
-/* from sonic physics
-Acceleration (acc), deceleration (dec), and friction (frc) are added to Xsp;
-jump velocity (jmp) and gravity (grv) are added to Ysp
-*/
-
 // default no arguments
 Sprite::Sprite()
 {
-	//Initialize
-	Width = 10;
-	Height = 10;
+    Width.x = 10;
+    Width.y = 10;
 	Depth = 1; // default
-
+	Period=0; // means not rotating
 	Mass = 1; // TODO
 
-	// position on screen, with origin in top left corner
-	Xposition = 5000;
-	Yposition = 5000;
+    Position.x = SCREEN_WIDTH/2.3;
+    Position.y = SCREEN_HEIGHT/2.3;
 
 	// change in position per tick (px/tick)
-	Xvelocity = 0;
-	Yvelocity = 0;
-	maxVelocity = 40;
+    setVelocity({0,0});
+	maxVelocity = 15;
 
-	// change in velocity per tick (px/tick^2)
-	Xacceleration = 0;
-	Yacceleration = 0;
-	maxAcceleration = 5;
+    setAcceleration({0,0});
+	maxAcceleration = 10;
 
-	SpriteRect = {Xposition,Yposition, Width, Height};
+	SpRect = {Position.x,Position.y, Width.x, Width.y};
 
-	RED =  0x00;
-	GREEN = 0x00;
-	BLUE = 0x00;
-
+    Colour = {0,0,0};
     label = "null";
 	collisionFlag = false;
 
 }
 
-Sprite::Sprite(int W, int H, SDL_Color Colour, double radius, int period, std::vector<Sprite>::size_type rotationPlanet, std::string name )
+Sprite::Sprite(int X, int Y, SDL_Color nColour, double radius, int period, bool clockwise, std::vector<Sprite>::size_type rotationPlanet, std::string name )
 {
-    Xposition = rand() % LEVEL_WIDTH;
-    Yposition = rand() % LEVEL_HEIGHT;
-    Width = W;
-    Height = H;
-    RED = Colour.r;
-    GREEN = Colour.g;
-    BLUE = Colour.b;
+    Position.x = rand() % LEVEL_WIDTH; // dont think this matters, update puts them into orbit after first tick
+    Position.y = rand() % LEVEL_HEIGHT;
+    Width.x = X;
+    Width.y = Y;
+    Colour = nColour;
     label = name;
     Radius = radius;
     Depth = 1; // default
     Period = period;
-    Angle = (double)(rand() % 360);
+
+    isClockwise = clockwise;
 
     RotatingAround = rotationPlanet;
 
-    SpriteRect = {Xposition,Yposition, Width, Height};
+    SpRect = {Position.x,Position.y, Width.x, Width.x};
 
-    Xvelocity = 0;
-	Yvelocity = 0;
-    maxVelocity = 3;
+    setVelocity({0,0});
+    maxVelocity = 10;
 
-    Xacceleration = 0;
-	Yacceleration = 0;
-	maxAcceleration = 3;
+    setAcceleration({0,0});
+	maxAcceleration = 10;
 
 }
 
@@ -88,42 +73,26 @@ Sprite::~Sprite()
 void Sprite::update()
 {
 
-    lastRect = { Xposition, Yposition, Width, Height };
+        lastRect = { Position.x, Position.y, Width.x, Width.y };
 
-    // off screen conditions
-    if(Xposition<0)
-		Xposition=0;
-    if(Xposition>LEVEL_WIDTH-Width)
-        Xposition=LEVEL_WIDTH-Width;
-    if(Yposition<0)
-		Yposition=0;
-    if(Yposition>LEVEL_HEIGHT-Height)
-        spawn(25,25);
-        //Yposition=LEVEL_HEIGHT-Height;
+        // off screen conditions
+        if(Position.x<0)
+            Position.x=Width.x*3;
+        if(Position.x>LEVEL_WIDTH-Width.x)
+            Position.x=LEVEL_WIDTH-Width.x*3;
+        if(Position.y<0)
+            Position.y=Width.y*3;
+        if(Position.y>LEVEL_HEIGHT-Width.y)
+            Position.y=LEVEL_HEIGHT-Width.y*3;
 
+        setVelocity({Velocity.x+Acceleration.x,Velocity.y+Acceleration.y} );
 
-    lastRect = { Xposition, Yposition, Width, Height };
+        Position.x += Velocity.x;
+        Position.y += Velocity.y;
 
-    setXvelocity(getXvelocity()+Xacceleration);
-    setYvelocity(getYvelocity()+Yacceleration);
+        SpRect = { Position.x, Position.y, Width.x, Width.y };
 
-    Xposition += Xvelocity;
-    Yposition += Yvelocity;
-
-    SpriteRect = { Xposition, Yposition, Width, Height };
-
-    // friction..?
-    if(collisionFlag)
-    {
-        if(Xvelocity<0) setXvelocity(getXvelocity()+1);
-        else if(Xvelocity>0) setXvelocity(getXvelocity()-1);
-
-        if(Yvelocity<0) setYvelocity(getYvelocity()-1);
-        else if(Yvelocity>0) setYvelocity(getYvelocity()+1);
-    }
-
-
-    unsetCollision();
+        unsetCollision();
 
 }
 
@@ -134,33 +103,33 @@ void Sprite::render(int camx, int camy)
         double miniDivY = LEVEL_HEIGHT/SCREEN_HEIGHT;
 
 		// render sprite
-        SDL_Rect SpriteRect = { Xposition - ( camx / Depth), Yposition - ( camy / Depth), Width, Height };
+        SDL_Rect SpRect = { Position.x - ( camx / Depth), Position.y - ( camy / Depth), Width.x, Width.y };
 
-		SDL_SetRenderDrawColor( gRenderer, RED, GREEN, BLUE, 0xFF );
-		if(Width==1&&mainState!=MAIN_MENU) SDL_RenderFillRect( gRenderer, &SpriteRect ); // for stars
+		SDL_SetRenderDrawColor( gRenderer, Colour.r, Colour.g, Colour.b, 0xFF );
+		if(Width.x==1&&mainState!=MAIN_MENU) SDL_RenderFillRect( gRenderer, &SpRect ); // for stars
 
-        // if main menu, make mini map, else render normally
-        else if(mainState==MAIN_MENU && Width/miniDivY<1) filledCircleColor(gRenderer, (getCentre().x)/miniDivX, (getCentre().y)/miniDivY , 1, ((0xff) << 24) + ((BLUE & 0xff) << 16) + ((GREEN & 0xff) << 8) + (RED & 0xff));
-		else if(mainState==MAIN_MENU) filledCircleColor(gRenderer, (getCentre().x)/miniDivX, (getCentre().y)/miniDivY , (Width*9/14)/ miniDivY, ((0xff) << 24) + ((BLUE & 0xff) << 16) + ((GREEN & 0xff) << 8) + (RED & 0xff));
+        // if main menu, make map, else render normally
+        else if(mainState==MAIN_MENU && Width.y/miniDivY<1) filledCircleColor(gRenderer, (getCentre().x)/miniDivX, (getCentre().y)/miniDivY , 1, ((0xff) << 24) + ((Colour.b & 0xff) << 16) + ((Colour.g & 0xff) << 8) + (Colour.r & 0xff));
+		else if(mainState==MAIN_MENU) filledCircleColor(gRenderer, (getCentre().x)/miniDivX, (getCentre().y)/miniDivY , (Width.x*9/14)/ miniDivY, ((0xff) << 24) + ((Colour.b & 0xff) << 16) + ((Colour.g & 0xff) << 8) + (Colour.r & 0xff));
         // finally, if not in mini map mode:
-        else if(mainState!=MAIN_MENU && (Xposition-camx) < SCREEN_WIDTH && (Xposition-camx) > 0 && (Yposition-camy) < SCREEN_HEIGHT && (Yposition-camy))
-            filledCircleColor(gRenderer, getCentre().x - camx, getCentre().y - camy , Width*9/14, ((0xff) << 24) + ((BLUE & 0xff) << 16) + ((GREEN & 0xff) << 8) + (RED & 0xff));
+        else if(mainState!=MAIN_MENU && (Position.x-camx) < SCREEN_WIDTH && (Position.x-camx) > 0 && (Position.y-camy) < SCREEN_HEIGHT && (Position.y-camy))
+            filledCircleColor(gRenderer, getCentre().x - camx, getCentre().y - camy , Width.y*9/14, ((0xff) << 24) + ((Colour.b & 0xff) << 16) + ((Colour.g & 0xff) << 8) + (Colour.r & 0xff));
+
+        if(label=="saturn") // rings of saturn
+        {
+            for(int i = 0; i<12; i++) ellipseRGBA(gRenderer, Position.x + Width.x/2 - camx ,Position.y + Width.y/2 - 70 - 3.5*i -  camy , Width.x + 15*i, Width.y - 400 + 15*i, 255,0,35*i,3*i );
+        }
 
         // trying to do in game mini map
-        if(mainState==LEVEL1 && Width/(miniDivY*6)<1) SDL_RenderDrawPoint(gRenderer, ((getCentre().x)/miniDivX)/6 + 1600, ((getCentre().y)/miniDivY)/6 );
-        else if(mainState==LEVEL1) filledCircleColor(gRenderer, ((getCentre().x)/miniDivX)/6 + 1600, ((getCentre().y)/miniDivY)/6 , ((Width*9/14)/ miniDivY*1.18)/6, ((0xff) << 24) + ((BLUE & 0xff) << 16) + ((GREEN & 0xff) << 8) + (RED & 0xff));
-
+        if(mainState==LEVEL1 && Width.y/(miniDivY*6)<1) SDL_RenderDrawPoint(gRenderer, ((getCentre().x)/miniDivX)/6 + 1600, ((getCentre().y)/miniDivY)/6 );
+        else if(mainState==LEVEL1) filledCircleColor(gRenderer, ((getCentre().x)/miniDivX)/6 + 1600, ((getCentre().y)/miniDivY)/6 , ((Width.y*9/14)/ miniDivY*1.18)/6, ((0xff) << 24) + ((Colour.b & 0xff) << 16) + ((Colour.g & 0xff) << 8) + (Colour.r & 0xff));
 
 		if(label!="null")
 		{
-            gTextTexture.loadFromRenderedText(label, gFont16, cyan );
-            if(mainState==MAIN_MENU && RotatingAround==0) gTextTexture.render( getCentre().x / miniDivX, Yposition / miniDivY);
-            else gTextTexture.render( getCentre().x - sizeof(label) - camx, Yposition - 15 - camy - 15);
+            gTextTexture.loadFromRenderedText(label, gFont12, white );
+            if(mainState==MAIN_MENU && RotatingAround==0) gTextTexture.render( getCentre().x / miniDivX, Position.y / miniDivY);
+            else if (mainState == LEVEL1) gTextTexture.render( getCentre().x - sizeof(label) - camx, Position.y - 15 - camy - 15);
 		}
-
-		//std::string position = std::to_string(Xvelocity) + "/" + std::to_string(Yvelocity) + "/" + std::to_string(Xposition) + "/" + std::to_string(Yposition);
-        //gTextTexture.loadFromRenderedText( position, gFont12, cyan );
-        //gTextTexture.render( Xposition + Width/2 - 40 - camx, Yposition + Height/2 - camy - 25);
 
 }
 
@@ -169,7 +138,7 @@ bool Sprite::checkCollision(SDL_Rect* rect)
 {
 
     bool flag = false;
-    if ( SDL_HasIntersection(&SpriteRect,rect)==SDL_TRUE )
+    if ( SDL_HasIntersection(&SpRect,rect)==SDL_TRUE )
 	{
 		flag = true;
 		collisionFlag = true;
@@ -183,30 +152,7 @@ void Sprite::collisionResponse(SDL_Rect newRect)
 {
     SDL_Rect collisionRect = getCollision(&newRect);
 
-	if(collisionRect.y + collisionRect.h == newRect.y + newRect.h && collisionRect.w>collisionRect.h) // hits bottom and moving up
-	{
-		invertYvelocity();
-		setYvelocity(0);
-		setYposition(getYposition() + collisionRect.h);
-	}
-	else if(collisionRect.y == newRect.y && collisionRect.w>collisionRect.h) // hits top and moving down
-	{
-		invertYvelocity();
-		setYvelocity(0);
-		setYposition(getYposition() - collisionRect.h);
-	}
-	else if(collisionRect.x + collisionRect.w == newRect.x + newRect.w  && collisionRect.h>collisionRect.w) // hits right and moving left
-	{
-		invertXvelocity();
-		setXvelocity(0);
-		setXposition(getXposition() + collisionRect.w);
-	}
-	else if(collisionRect.x == newRect.x  && collisionRect.h>collisionRect.w) // hits left and moving right
-	{
-		invertXvelocity();
-		setXvelocity(0);
-		setXposition(getXposition() - collisionRect.w);
-	}
+	// revamp collision!!! maybe some circle detection
 
 
 }
@@ -215,210 +161,76 @@ void Sprite::setCollision()
 {
     collisionFlag = true;
 }
+SDL_Rect Sprite::getCollision(SDL_Rect* rect)
+{
+    SDL_Rect result;
+    SDL_IntersectRect(&SpRect,rect,&result);
+    return result;
+}
 
 
 SDL_Rect Sprite::getRect()
 {
-    SpriteRect = {Xposition,Yposition, Width, Height};
-    return SpriteRect;
+    SpRect = {Position.x,Position.y, Width.x, Width.y};
+    return SpRect;
 }
 
-double Sprite::getRad()
+double Sprite::getRad() { return Radius; }
+
+double Sprite::getAngle() { return Angle; }
+
+void Sprite::setAngle(double newAngle) { Angle = newAngle; }
+
+SDL_Point Sprite::getCentre() { return { Position.x+Width.x/2,Position.y+Width.y/2 }; }
+
+SDL_Rect Sprite::getLastRect() { return lastRect; }
+
+SDL_Point Sprite::getVelocity() { return Velocity; }
+
+void Sprite::setVelocity(SDL_Point amount)
 {
-    return Radius;
-}
-
-double Sprite::getAngle()
-{
-    return Angle;
-}
-
-void Sprite::setAngle(double newAngle)
-{
-    Angle = newAngle;
-}
-
-SDL_Point Sprite::getCentre()
-{
-    SDL_Point centre = {Xposition+Width/2,Yposition+Height/2};
-    return centre;
-}
-
-SDL_Rect Sprite::getLastRect()
-{
-    return lastRect;
-}
-
-
-SDL_Rect Sprite::getCollision(SDL_Rect* rect)
-{
-    SDL_Rect result;
-    SDL_IntersectRect(&SpriteRect,rect,&result);
-    return result;
-}
-
-void Sprite::spawn(int X, int Y)
-{
-	Xposition = X;
-	Yposition = Y;
-
-}
-
-int Sprite::getXvelocity()
-{
-	return Xvelocity;
-
-}
-int Sprite::getYvelocity()
-{
-	return Yvelocity;
-}
-
-void Sprite::setXvelocity(int amount)
-{
-	if(amount > maxVelocity)
-		Xvelocity = maxVelocity;
-	else if(amount < -maxVelocity)
-		Xvelocity = -maxVelocity;
+    int newX,newY;
+	if(amount.x > maxVelocity)
+		newX = maxVelocity;
+	else if(amount.x < -maxVelocity)
+		newX = -maxVelocity;
 	else
-		Xvelocity = amount;
-}
-
-void Sprite::setYvelocity(int amount)
-{
-    if(amount > maxVelocity)
-		Yvelocity = maxVelocity;
-	else if(amount < -maxVelocity)
-		Yvelocity = -maxVelocity;
+		newX = amount.x;
+    if(amount.y > maxVelocity)
+		newY = maxVelocity;
+	else if(amount.y < -maxVelocity)
+		newY = -maxVelocity;
 	else
-		Yvelocity = amount;
+		newY = amount.y;
+
+    Velocity = {newX,newY};
 }
 
-void Sprite::setMaxVelocity(int value)
-{
-	maxVelocity = value;
-}
+void Sprite::setMaxVelocity(int value) { maxVelocity = value; }
 
-void Sprite::setXacceleration(int amount)
-{
-	Xacceleration = amount;
-}
+SDL_Point Sprite::getAcceleration() { return Acceleration; }
+void Sprite::setAcceleration(SDL_Point newAccel) { Acceleration = newAccel; }
 
-void Sprite::setYacceleration(int amount)
-{
-	Yacceleration = amount;
-}
+void Sprite::invertXvelocity() { Velocity.x *= -1; }
 
-int Sprite::getXacceleration()
-{
-	return Xacceleration;
-}
+void Sprite::invertYvelocity() { Velocity.y *= -1; }
 
-int Sprite::getYacceleration()
-{
-	return Yacceleration;
-}
+std::vector<Sprite>::size_type Sprite::getRotating() { return RotatingAround; }
 
-void Sprite::invertXvelocity()
-{
-    Xvelocity *= -1;
-}
+int Sprite::getPeriod() { return Period; }
 
-void Sprite::invertYvelocity()
-{
-    Yvelocity *= -1;
-}
+SDL_Point Sprite::getWidth() { return Width; }
+void Sprite::setWidth(SDL_Point newWidth) {Width.x = newWidth.x; Width.y = newWidth.y; }
 
-std::vector<Sprite>::size_type Sprite::getRotating()
-{
-    return RotatingAround;
-}
+int Sprite::getDepth() {	return Depth; }
+void Sprite::setDepth(int newDepth){ Depth = newDepth; }
 
-int Sprite::getPeriod()
-{
-    return Period;
-}
+SDL_Point Sprite::getPosition() { return Position; }
+void Sprite::setPosition(SDL_Point newPos) { Position = newPos; }
 
-int Sprite::getHeight()
-{
-	return Height;
-}
-void Sprite::setHeight(int newHeight)
-{
-	Height = newHeight;
+SDL_Colour Sprite::getColour() { return Colour; }
+void Sprite::setColour(SDL_Colour newColour) { Colour = newColour; }
 
-}
+void Sprite::unsetCollision() { collisionFlag = false; }
 
-int Sprite::getWidth()
-{
-	return Width;
-}
-void Sprite::setWidth(int newWidth)
-{
-	Width = newWidth;
-
-}
-
-int Sprite::getDepth()
-{
-	return Depth;
-}
-void Sprite::setDepth(int newDepth)
-{
-	Depth = newDepth;
-
-}
-
-int Sprite::getXposition()
-{
-	return Xposition;
-}
-int Sprite::getYposition()
-{
-	return Yposition;
-}
-void Sprite::setXposition(int newX)
-{
-	Xposition = newX;
-}
-void Sprite::setYposition(int newY)
-{
-	Yposition = newY;
-}
-
-int Sprite::getRED()
-{
-	return RED;
-}
-void Sprite::setRED(int newRED)
-{
-	RED = newRED;
-}
-
-int Sprite::getBLUE()
-{
-	return BLUE;
-}
-void Sprite::setBLUE(int newBLUE)
-{
-	BLUE = newBLUE;
-}
-
-int Sprite::getGREEN()
-{
-	return GREEN;
-}
-void Sprite::setGREEN(int newGREEN)
-{
-	GREEN = newGREEN;
-}
-
-void Sprite::unsetCollision()
-{
-	collisionFlag = false;
-}
-
-int Sprite::getMass()
-{
-	return Mass;
-}
+int Sprite::getMass() { return Mass; }

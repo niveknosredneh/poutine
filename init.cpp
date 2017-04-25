@@ -111,15 +111,15 @@ bool loadMedia()
 	}
 
     //Open the font
-	gFont24 = TTF_OpenFont( "Sansation-Regular.ttf", 24 );
+	gFont24 = TTF_OpenFont( "Sansation-Bold.ttf", 24 );
 	if( gFont24 == NULL )
 	{
 		printf( "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError() );
 		success = false;
 	}
 
-	gFont16 = TTF_OpenFont( "Sansation-Regular.ttf", 16 );
-	gFont12 = TTF_OpenFont( "Sansation-Regular.ttf", 12 );
+	gFont16 = TTF_OpenFont( "Sansation-Bold.ttf", 16 );
+	gFont12 = TTF_OpenFont( "Sansation-Bold.ttf", 12 );
 
 	return success;
 }

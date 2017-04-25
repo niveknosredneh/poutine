@@ -9,7 +9,6 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_net.h>
 
-
 #include <stdio.h>
 #include <string>
 #include <cmath>

@@ -5,6 +5,9 @@ class Hero : public Sprite
 {
 	private:
 
+        double Health;
+        double ShieldHealth;
+
         std::vector<Bullet> bullets;
 
 
@@ -29,6 +32,8 @@ class Hero : public Sprite
         void moveDown();
 
 		void renderBullets(int,int);
+
+		double getHealth();
 
 
 

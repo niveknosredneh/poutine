@@ -15,8 +15,8 @@ SDL_Rect changeAngle(Sprite R1, Sprite R2, double changeInDegrees)
 
     double newX = R1.getCentre().x;
     double newY = R1.getCentre().y;
-    newRect.x = newX - R2.getWidth()/2 - radius * cos(theta);
-    newRect.y = newY - R2.getWidth()/2 - radius * sin(theta);
+    newRect.x = newX - R2.getWidth().x/2 - radius * cos(theta);
+    newRect.y = newY - R2.getWidth().y/2 - radius * sin(theta);
 
     return newRect;
 }

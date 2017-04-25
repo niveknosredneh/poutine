@@ -6,27 +6,25 @@
 Bullet::Bullet(int ticks)
 {
 	//Initialize
-	Width = 2;
-	Height = 2;
+	Width.x = 2;
+	Width.y = 2;
 	Depth = 1; // default
 
 	Mass = 1; // TODO
 
 	// change in position per tick (px/tick)
-	Xvelocity = 1;
-	Yvelocity = 1;
+	Velocity.x = 1;
+	Velocity.y = 1;
 	maxVelocity = 40;
 
 	// change in velocity per tick (px/tick^2)
-	Xacceleration = 0;
-	Yacceleration = 0;
+	Acceleration.x = 0;
+	Acceleration.y = 0;
 	maxAcceleration = 5;
 
-	SpriteRect = {Xposition,Yposition, Width, Height};
+	SpRect = {Position.x,Position.y, Width.x, Width.y};
 
-	RED =  0xff;
-	GREEN = 0x00;
-	BLUE = 0x00;
+	Colour = {0,0,255};
 
     label = "null";
 	collisionFlag = false;

@@ -8,33 +8,25 @@ class Sprite
 	protected:
 
         SDL_Rect lastRect;
-        SDL_Rect SpriteRect;
+        SDL_Rect SpRect;
 
-		//Image dimensions
-		int Height;
-		int Width;
+		SDL_Point Width;
 		int Depth;  // used for camera multiplier (stars)
 
 		int Mass; // TODO
+
 		std::vector<Sprite>::size_type RotatingAround;
 		int Period;
         double Radius;
         double Angle;
         bool isClockwise;
 
-		int Xposition; //top left coordinate of rectangle
-		int Yposition;
+		SDL_Colour Colour;
 
-		int RED;
-		int BLUE;
-		int GREEN;
-
-		int Xvelocity;
-		int Yvelocity;
+		SDL_Point Position;
+		SDL_Point Velocity;
 		int maxVelocity;
-
-		int Xacceleration;
-		int Yacceleration;
+		SDL_Point Acceleration;
 		int maxAcceleration;
 
 		bool collisionFlag;
@@ -45,7 +37,7 @@ class Sprite
 	public:
 		//Initializes variables
 		Sprite();
-		Sprite(int W, int H, SDL_Color, double radius, int period, std::vector<Sprite>::size_type, std::string );
+		Sprite(int W, int H, SDL_Color, double radius, int period, bool, std::vector<Sprite>::size_type, std::string );
 
 		//Deallocates memory
 		~Sprite();
@@ -63,19 +55,12 @@ class Sprite
 		SDL_Rect getRect();
 		SDL_Rect getLastRect();
 
-		void spawn (int,int);
-
-		void setMaxVelocity(int);
-
 		double getRad();
 		std::vector<Sprite>::size_type getRotating();
 		int getPeriod();
 
-		//Gets image dimensions
-		int getWidth();
-		int getHeight();
-		void setHeight(int newHeight);
-		void setWidth(int newWidth);
+		SDL_Point getWidth();
+		void setWidth(SDL_Point);
 
 		int getDepth();
         void setDepth(int newDepth);
@@ -85,33 +70,18 @@ class Sprite
 
         SDL_Point getCentre();
 
+        SDL_Colour getColour();
+		void setColour(SDL_Colour);
 
-		//Gets image dimensions
-		int getXposition();
-		int getYposition();
+		SDL_Point getPosition();
+		void setPosition(SDL_Point);
 
-        void setXposition(int);
-		void setYposition(int);		//Gets image dimensions
+		SDL_Point getVelocity();
+		void setVelocity(SDL_Point);
+        void setMaxVelocity(int);
 
-		int getRED();
-		int getGREEN();
-		int getBLUE();
-
-		void setRED(int newRED);
-		void setGREEN(int newGREEN);
-		void setBLUE(int newBLUE);
-
-		int getXvelocity();
-		int getYvelocity();
-
-		void setXvelocity(int amount);
-        void setYvelocity(int amount);
-
-		int getXacceleration();
-		int getYacceleration();
-
-		void setXacceleration(int);
-		void setYacceleration(int);
+		SDL_Point getAcceleration();
+		void setAcceleration(SDL_Point);
 
 		void invertXvelocity();
 		void invertYvelocity();

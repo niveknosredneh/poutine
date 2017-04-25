@@ -1,5 +1,6 @@
 #include "main.h"
 
+
 bool eventHandler()
 {
 	extern Hero hero1;
@@ -20,7 +21,7 @@ bool eventHandler()
 	}
 	if( currentKeyStates[ SDL_SCANCODE_LALT ] )
 	{
-		hero1.setYvelocity(0);
+
 	}
 
 
@@ -69,8 +70,6 @@ bool eventHandler()
 		else if(menuSelector==3) mainState = QUIT;
 
 	}
-
-
 
 
     if( currentKeyStates[ SDL_SCANCODE_W ] )
