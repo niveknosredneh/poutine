@@ -3,9 +3,9 @@
 
 Hero hero1;
 
-GameState mainState = MAIN_MENU; // see main.h
-short menuSelector = 0;
+std::vector<Sprite> planets;
 
+GameState mainState = INTRO; // see main.h
 
 bool isDebug = true; // debug flag
 std::string DMSG; // debug msg
@@ -23,9 +23,13 @@ const int SCREEN_HEIGHT = 1080;
 const int LEVEL_WIDTH = 350000;
 const int LEVEL_HEIGHT = 350000;
 
-SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+double ZOOMx = 2;
 
-const int CAPPED_FPS = 80;
+SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+std::vector<Sprite>::size_type cameraTarget = -1;
+
+
+const int CAPPED_FPS = 30;
 const int TICKS_PER_FRAME = 1000 / CAPPED_FPS;
 
 // pre defined colours
@@ -42,12 +46,17 @@ SDL_Color cyan   = {0,255,255};
 SDL_Color magenta   = {255,0,255};
 SDL_Color brown   = {109, 54, 43};
 
-Menu mainMenu;
+std::vector<std::string> menuVector = { "solo play" ,  "multi play", "options",  "exit" };
+Menu mainMenu(menuVector);
+std::vector<std::string> optionsVector = { "team" ,  "screen size", "stuff", "exit" };
+Menu optionsMenu(optionsVector);
 
 //Globally used font
+TTF_Font *gFont40 = NULL;
 TTF_Font *gFont24 = NULL;
 TTF_Font *gFont16 = NULL;
 TTF_Font *gFont12 = NULL;
+TTF_Font *tFont40 = NULL;
 
 //Rendered texture
 Texture gTextTexture;
@@ -67,96 +76,94 @@ int main( int argc, char* args[] )
 
 		std::vector<Sprite> sprites; // master list of sprites ? (not subsprites)
 		sprites.push_back(hero1);
-
+		focusCamera(-1); // focuses on hero
 
         // begin Planet definitions
-        std::vector<Sprite> planets;
-
-        Sprite sol(7000, 7000, yellow, 0, 0, true , 0, "null"); // we all get that its the sun, no label
+        Sprite sol(7000, 1900, yellow, 0, 0, true , 0, "sun");
         sol.setPosition({LEVEL_WIDTH/2 - sol.getWidth().x/2,LEVEL_HEIGHT/2 - sol.getWidth().y/2 });
         planets.push_back(sol);
         sprites.push_back(sol); // add to list of sprites
 
-        Sprite mercury(24, 24, white, 6000, 40 , true , 0 ,"mercury");
+        Sprite mercury(24, 1,white, 6000, 40 , true , 0 ,"mercury");
         planets.push_back(mercury);
         sprites.push_back(mercury);
 
-        Sprite venus(60, 60, orange, 8500, 62, false,  0,"venus");
+        Sprite venus(60, 1,orange, 8500, 62, false,  0,"venus");
         planets.push_back(venus);
         sprites.push_back(venus);
 
-        Sprite terra(63, 63, blue, 11000, 100, true, 0,"terra");
+        Sprite terra(63, 6,blue, 11000, 100, true, 0,"earth");
         planets.push_back(terra);
         sprites.push_back(terra);
 
-        Sprite luna(17, 17, brown, 450, 3, true, 3,"luna");
+        Sprite luna(17, 1,brown, 450, 5, true, 3,"luna");
         planets.push_back(luna);
         sprites.push_back(luna);
 
-        Sprite mars(33, 33, red, 14000, 188, true, 0,"mars");
+        Sprite mars(33, 1,red, 14000, 188, true, 0,"mars");
         planets.push_back(mars);
         sprites.push_back(mars);
 
-        Sprite phobos(3, 3, darkorange, 200, 2, true, 5,"phobos");
+        Sprite phobos(3, 1,darkorange, 200, 2, true, 5,"phobos");
         planets.push_back(phobos);
         sprites.push_back(phobos);
 
-        Sprite deimos(2, 2, red, 450, 4, true, 5,"deimos");
+        Sprite deimos(2, 1,red, 450, 4, true, 5,"deimos");
         planets.push_back(deimos);
         sprites.push_back(deimos);
 
-        Sprite ceres(20, 20, darkorange, 22050, 459, true, 0,"ceres");
+        Sprite ceres(20, 1,darkorange, 22050, 459, true, 0,"ceres");
         planets.push_back(ceres);
         sprites.push_back(ceres);
 
-        Sprite jupiter(700, 700, brown, 30000, 1200, true, 0,"jupiter");
+        Sprite jupiter(700, 100, brown, 30000, 1200, true, 0,"jupiter");
         planets.push_back(jupiter);
         sprites.push_back(jupiter);
 
-        Sprite ganymede(26, 26, brown, 1300, 20, true, 9,"ganymede");
+        Sprite ganymede(26, 1,brown, 1300, 20, true, 9,"ganymede");
         planets.push_back(ganymede);
         sprites.push_back(ganymede);
 
-        Sprite europa(15, 15, brown, 1050, 10, true, 9,"europa");
+        Sprite europa(15, 1,brown, 1050, 10, true, 9,"europa");
         planets.push_back(europa);
         sprites.push_back(europa);
 
-        Sprite callisto(24, 24, brown, 2000, 40,  true, 9,"callisto");
+        Sprite callisto(24, 1,brown, 2000, 40,  true, 9,"callisto");
         planets.push_back(callisto);
         sprites.push_back(callisto);
 
-        Sprite io(18, 18, brown, 800, 3, true, 9,"io");
+        Sprite io(18, 1,brown, 800, 3, true, 9,"io");
         planets.push_back(io);
         sprites.push_back(io);
 
-        Sprite saturn(580, 580, red, 55000, 2946, true, 0,"saturn");
+        Sprite saturn(580, 57, red, 55000, 2946, true, 0,"saturn");
         planets.push_back(saturn);
         sprites.push_back(saturn);
 
-        Sprite titan(25, 25, yellow, 1200, 8, true, 14,"titan");
+        Sprite titan(25, 1,yellow, 1200, 8, true, 14,"titan");
         planets.push_back(titan);
         sprites.push_back(titan);
 
-        Sprite uranus(250, 250, lightblue, 80000, 8400, false, 0,"uranus");
+        Sprite uranus(250, 1,lightblue, 80000, 8400, false, 0,"uranus");
         planets.push_back(uranus);
         sprites.push_back(uranus);
 
-        Sprite neptune(240, 240, blue, 110000, 16480, true, 0,"neptune");
+        Sprite neptune(240, 10,blue, 110000, 16480, true, 0,"neptune");
         planets.push_back(neptune);
         sprites.push_back(neptune);
 
-        Sprite triton(13, 13, blue, 500, 67000, true, 17,"triton");
+        Sprite triton(13, 1,blue, 500, 67000, true, 17,"triton");
         planets.push_back(triton);
         sprites.push_back(triton);
 
-        Sprite pluto(13, 13, brown, 140000, 24800, true, 0,"pluto");
+        Sprite pluto(13, 1,brown, 140000, 24800, true, 0,"pluto");
         planets.push_back(pluto);
         sprites.push_back(pluto);
         // end planet definitions
 
 
         std::vector<Sprite> stars1; // not added to master list of sprites
-        for(int i = 0; i<5000; i++)
+        for(int i = 0; i<6000; i++)
         {
             // TODO: find better divider const than 10
             Sprite newstar;
@@ -169,26 +176,25 @@ int main( int argc, char* args[] )
 
         //inner belt
         std::vector<Sprite> asteroids1;
-        for(int i = 0; i<1000; i++)
+        for(int i = 0; i<500; i++)
         {
             int diam = (rand() % 5) + 5;
-            Sprite newast(diam, diam, blue, 22000 + (rand() % 2000), 1000 + rand() % 300 , true, 0, "null");
-            newast.setColour( { 0, rand() % 255 , rand() % 255 } );
+            Sprite newast(diam, 1,blue, 22000 + (rand() % 2000), 1000 + rand() % 300 , true, 0, "null");
+            newast.setColour( blue );
             asteroids1.push_back(newast);
             sprites.push_back(newast);
         }
 
         //Kuiper belt
         std::vector<Sprite> asteroids2;
-        for(int i = 0; i<2000; i++)
+        for(int i = 0; i<800; i++)
         {
             int diam = (rand() % 5) + 5;
-            Sprite newast(diam, diam, green, 120000 + (rand() % 55000), 50000 , true, 0, "null");
-            newast.setColour( { 0, rand() % 255 , rand() % 255 } );
+            Sprite newast(diam, 1,green, 120000 + (rand() % 55000), 50000 , true, 0, "null");
+            newast.setColour( blue );
             asteroids2.push_back(newast);
             sprites.push_back(newast);
         }
-
 
         // timer init
         Timer fpsTimer, capTimer; // Timer object
@@ -196,9 +202,7 @@ int main( int argc, char* args[] )
 		int countedFrames = 0;
 		// end timer init
 
-
-
-        // disable networking
+        // disabled networking
 		//std::thread t1(networkLoop);
 
         bool quit = false; //Main loop flag
@@ -214,15 +218,44 @@ int main( int argc, char* args[] )
             while( SDL_PollEvent( &e ) != 0 ) if( e.type == SDL_QUIT ) quit = true;
             bool status = eventHandler(); // handle user input
 
-            // where to place vision
-            camera.x =  hero1.getPosition().x - SCREEN_WIDTH/2;
-            camera.y =  hero1.getPosition().y - SCREEN_HEIGHT/2;
+            focusCamera(cameraTarget);
 
             //Keep the camera in bounds
             if( camera.x < 0 ) { camera.x = 0; }
             if( camera.y < 0 ) { camera.y = 0; }
             if( camera.x > LEVEL_WIDTH - camera.w ) { camera.x = LEVEL_WIDTH - camera.w; }
             if( camera.y > LEVEL_HEIGHT - camera.h ) { camera.y = LEVEL_HEIGHT - camera.h; }
+
+            if(mainState==INTRO)
+            {
+                SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0x00, 0xFF );
+                if(fpsTimer.getTicks()/100 > 1)
+                {
+                    SDL_RenderDrawLine(gRenderer,580,0,580,660 );
+                }
+
+                if(fpsTimer.getTicks()/100 > 5)
+                {
+                    gTextTexture.loadFromRenderedText( "Kevin Henderson Studios", tFont40,  {white.r,white.g,white.b+fpsTimer.getTicks()/40} );
+                    gTextTexture.render( 600, 600 );
+                    SDL_RenderDrawLine(gRenderer,580,660,1500,660);
+                }
+
+                if(fpsTimer.getTicks()/100 > 11)
+                {
+                    gTextTexture.loadFromRenderedText( "Presents ...", tFont40,  white );
+                    gTextTexture.render( 1200, 680 );
+                    SDL_RenderDrawLine(gRenderer,1500,660,1500,SCREEN_HEIGHT);
+                }
+
+                if(fpsTimer.getTicks()/100 > 30)
+                {
+                    //clear the screen
+                    SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
+                    SDL_RenderClear( gRenderer );
+                    mainState = MAIN_MENU;
+                }
+            }
 
             if(mainState==LEVEL1)
             {
@@ -237,58 +270,87 @@ int main( int argc, char* args[] )
                 newRect = {5*SCREEN_WIDTH/6, 2, SCREEN_WIDTH/6 - 2, SCREEN_HEIGHT/6};
                 SDL_RenderFillRect( gRenderer, &newRect ); // render over stars fo mini map
 
+                // update sprites
+                hero1.update();
+
+                for(int i=0;i<15;i++)
+                {
+                    int rIntX = rand() % hero1.getWidth().x;
+                    int rIntY = rand() % hero1.getWidth().y;
+                    SDL_SetRenderDrawColor( gRenderer, rand() % 255, 0x00, 0x00, 0xFF );
+                    SDL_RenderDrawLine(gRenderer, hero1.getPosition().x + hero1.getWidth().x/2- rIntX -camera.x, hero1.getPosition().y + hero1.getWidth().y/2 - rIntY-camera.y, hero1.getPosition().x + hero1.getWidth().x/2 - rIntX - (hero1.getVelocity().x) - camera.x , hero1.getPosition().y + hero1.getWidth().y/2 - rIntY - (hero1.getVelocity().y) - camera.y);
+                    gTextTexture.loadFromRenderedText(std::to_string(std::sqrt(hero1.getVelocity().x*hero1.getVelocity().x + hero1.getVelocity().y*hero1.getVelocity().y)), gFont12, white );
+                    gTextTexture.render( hero1.getPosition().x+hero1.getVelocity().x-camera.x, hero1.getPosition().y+hero1.getVelocity().y -camera.y);
+                }
+
+                hero1.Sprite::render(camera.x, camera.y);
+                hero1.renderBullets(camera.x,camera.y);
+
+                // START HUD
+                gTextTexture.loadFromRenderedText("  R  ", gFont24, red );
+                gTextTexture.render( 135,SCREEN_HEIGHT-105);
+                SDL_SetRenderDrawColor( gRenderer, 255, 0x00, 0x00, 0xFF );
+                SDL_Rect redBar = {20, SCREEN_HEIGHT-100 , 255, 20};
+                SDL_RenderDrawRect(gRenderer, &redBar);
+
+                gTextTexture.loadFromRenderedText("  G  ", gFont24, green );
+                gTextTexture.render( 135,SCREEN_HEIGHT-75);
+                SDL_SetRenderDrawColor( gRenderer, 0, 255, 0x00, 0xFF );
+                SDL_Rect greenBar = {20, SCREEN_HEIGHT-70 , 255, 20};
+                SDL_RenderDrawRect(gRenderer, &greenBar);
+
+                gTextTexture.loadFromRenderedText("  B  ", gFont24, blue );
+                gTextTexture.render( 135,SCREEN_HEIGHT-45);
+                SDL_SetRenderDrawColor( gRenderer, 0, 0x00, 255, 0xFF );
+                SDL_Rect blueBar = {20, SCREEN_HEIGHT-40 , 255, 20};
+                SDL_RenderDrawRect(gRenderer, &blueBar);
+
+
+                gTextTexture.loadFromRenderedText("HEALTH - " + std::to_string( (int) hero1.getHealth()) + "%", gFont24, orange );
+                gTextTexture.render( SCREEN_WIDTH-250,SCREEN_HEIGHT-50);
+                // END HUD
+
             }
 
             // renders all asteroids
             for (std::vector<Sprite>::size_type i = 0; i < asteroids1.size(); i++)
             {
-                    asteroids1[i].update();
+                asteroids1[i].update();
+                if(checkCollision(hero1,asteroids2[i])==true)
+                    hero1.damage(asteroids1[i].getMass());
 
-                    SDL_Rect newRect;
-                    newRect = changeAngle(planets[asteroids1[i].getRotating()],asteroids1[i], 10.f/ asteroids1[i].getPeriod());
-
-                    asteroids1[i].setPosition({newRect.x,newRect.y});
-                    asteroids1[i].render(camera.x,camera.y);
+                asteroids1[i].render(camera.x,camera.y);
             }
             for (std::vector<Sprite>::size_type i = 0; i < asteroids2.size(); i++)
             {
-                    asteroids2[i].update();
+                asteroids2[i].update();
+                if(checkCollision(hero1,asteroids2[i])==true)
+                    hero1.damage(asteroids2[i].getMass());
 
-                    SDL_Rect newRect;
-                    newRect = changeAngle(planets[asteroids2[i].getRotating()],asteroids2[i], 10.f/ asteroids2[i].getPeriod());
-
-                    asteroids2[i].setPosition({newRect.x,newRect.y});
-                    asteroids2[i].render(camera.x,camera.y);
+                asteroids2[i].render(camera.x,camera.y);
             }
 
+            // planets
             for (std::vector<Sprite>::size_type i = 0; i < planets.size(); i++)
             {
-                planets[i].update();
 
-                SDL_Rect newRect;
-                if(i!=0)
+                if(i>0) planets[i].update(); // dont update the sun, it shouldnt move
+
+                // pull hero towards planet
+                double Radius = getRadius(hero1.getPosition(),planets[i].getPosition());
+                hero1.bePulled(planets[i], hero1.getMass()*planets[i].getMass()/ Radius);
+
+                if(checkCollision(hero1,planets[i])==true)
                 {
-                    newRect = changeAngle(planets[planets[i].getRotating()],planets[i], 10.f/ planets[i].getPeriod()) ;
-
-                    planets[i].setPosition({newRect.x,newRect.y});
-
+                    hero1.setPosition({hero1.getPosition().x-hero1.getVelocity().x,hero1.getPosition().y-hero1.getVelocity().y});
+                    hero1.setVelocity({0,0});
+                    hero1.damage(5);
                 }
-
                 planets[i].render(camera.x,camera.y);
-
-                newRect = planets[i].getRect();
-                if (hero1.checkCollision(&newRect))
-                {
-                    hero1.collisionResponse(newRect);
-
-                    circleColor(gRenderer, hero1.getCentre().x - camera.x, hero1.getCentre().y - camera.y , 13, 0xFF0000FF);
-                }
             }
 
 
             // !! everything before this point inside the main loop gets executed regardless of game state !!
-
-
             if(mainState==QUIT)
             {
                 quit=true;
@@ -309,13 +371,8 @@ int main( int argc, char* args[] )
             if(mainState == OPTIONS)
             {
                 //havent gotten this far
-                mainState = MAIN_MENU;
-            }
-
-            if(mainState == OPTIONS)
-            {
-                //havent gotten this far
-                mainState = MAIN_MENU;
+                SDL_Delay(100);
+                optionsMenu.render();
             }
 
             if(mainState == MULTIPLAYER)
@@ -327,11 +384,18 @@ int main( int argc, char* args[] )
             if(mainState == LEVEL1)
             {
 
-                //update sprites
-                hero1.update();
 
-                hero1.Sprite::render(camera.x, camera.y);
-                hero1.Hero::renderBullets(camera.x,camera.y);
+
+            }
+
+            if(mainState == DEATH) // player has died, can no longer control like in gamestate LEVEL1
+            {
+                //clear the screen
+                SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
+                SDL_RenderClear( gRenderer );
+
+                gTextTexture.loadFromRenderedText( "Time is infinite, you are not", gFont24,  red );
+                gTextTexture.render( SCREEN_HEIGHT-300, SCREEN_WIDTH/2 - 50 );
 
             }
 
@@ -353,37 +417,26 @@ int main( int argc, char* args[] )
                                     + std::to_string(SDL_GetCPUCount()) + "xCPU "
                                     + std::to_string(SDL_GetSystemRAM()) + "MB RAM";
 
-                gTextTexture.loadFromRenderedText( debug, gFont12,  red );
+                gTextTexture.loadFromRenderedText( debug, gFont12,  blue );
                 gTextTexture.render( 10, 10 );
 
-                gTextTexture.loadFromRenderedText( std::to_string( (int) (1000.f / capTimer.getTicks()) ) + " fps" , gFont16,  red );
+                gTextTexture.loadFromRenderedText( std::to_string( (int) (1000.f / capTimer.getTicks()) ) + " fps" , gFont16,  blue );
                 gTextTexture.render( 10, 25 );
 
-                double theta = getTheta(hero1,planets[0]) * 180.0/3.141593;;
-                if (theta<0) theta+=360; // weird degree conversion, cant explain
-
-                gTextTexture.loadFromRenderedText( std::to_string(theta), gFont12,  red );
+                gTextTexture.loadFromRenderedText( std::to_string(fpsTimer.getTicks()), gFont12,  blue );
                 gTextTexture.render( 10, 55 );
                 gTextTexture.loadFromRenderedText( std::to_string(hero1.getPosition().x) + ", "
                                                 + std::to_string(hero1.getVelocity().x) + " / "
                                                 + std::to_string(hero1.getPosition().y) + ", "
                                                 + std::to_string(hero1.getVelocity().y)
-                                                , gFont12,  red );
+                                                , gFont12,  blue );
                 gTextTexture.render( 10, 70 );
-                gTextTexture.loadFromRenderedText( "camera: " + std::to_string(camera.x) + "," + std::to_string(camera.y), gFont12,  red );
+                gTextTexture.loadFromRenderedText( "camera: " + std::to_string(camera.x) + "," + std::to_string(camera.y), gFont12,  blue );
                 gTextTexture.render( 10, 85 );
             }
             // END DEBUG HUD section --->
 
-                gTextTexture.loadFromRenderedText("RED - ", gFont24, red );
-                gTextTexture.render( 35,SCREEN_HEIGHT-110);
-                gTextTexture.loadFromRenderedText("GREEN - ", gFont24, green );
-                gTextTexture.render( 35,SCREEN_HEIGHT-80);
-                gTextTexture.loadFromRenderedText("BLUE - ", gFont24, blue );
-                gTextTexture.render( 35,SCREEN_HEIGHT-50);
 
-                gTextTexture.loadFromRenderedText("HEALTH - " + std::to_string( (int) hero1.getHealth()) + "%", gFont24, orange );
-                gTextTexture.render( SCREEN_WIDTH-250,SCREEN_HEIGHT-50);
 
             //Update screen - only need to do this once per frame
             SDL_RenderPresent( gRenderer );
@@ -394,17 +447,19 @@ int main( int argc, char* args[] )
 	return 0;
 }
 
-void menuSelect(int change)
+void focusCamera(int target)
 {
-    if(change==-1)
-    {
-        if(menuSelector==0) menuSelector=3;
-        else menuSelector+=change;
-    }
-    else if(change==1)
-    {
-        if(menuSelector==3) menuSelector=0;
-        else menuSelector+=change;
-    }
-
+        if(target==-1)
+        {// where to place vision
+            camera.x =  hero1.getPosition().x - SCREEN_WIDTH/2;
+            camera.y =  hero1.getPosition().y - SCREEN_HEIGHT/2;
+        }
+        else
+        {// where to place vision
+            camera.x =  planets[target].getPosition().x - SCREEN_WIDTH/2;
+            camera.y =  planets[target].getPosition().y - SCREEN_HEIGHT/2;
+        }
 }
+
+
+

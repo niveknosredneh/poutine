@@ -7,17 +7,22 @@ class Menu
 {
 	protected:
 
-        std::string titles[8];
+        std::vector<std::string> titles;
 
         int menuTimer;
+        short menuSelector;
 
 
 
     public:
 
-        Menu();
+        Menu(std::vector<std::string>);
 
         void render();
+
+        void setMenuSelector(short);
+        short getMenuSelector();
+
 
 
 };

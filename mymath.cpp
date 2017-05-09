@@ -4,45 +4,59 @@
 // My math functions mostly for polar coordinates
 // theta is in RADIANS! unless specified otherwise
 
-
-SDL_Rect changeAngle(Sprite R1, Sprite R2, double changeInDegrees)
+//A circle stucture
+struct Circle
 {
-    SDL_Rect newRect;
+    int x, y;
+    int r;
+};
 
-    double theta = getTheta(R2,R1);
+
+SDL_Point changeAngle(SDL_Point P1, SDL_Point P2, double Rad, double changeInDegrees)
+{
+    SDL_Point newP;
+
+    double theta = getTheta(P2,P1);
     theta += (changeInDegrees * 3.141593/180.0); // conversion from degrees to radians
-    double radius = R2.getRad();
 
-    double newX = R1.getCentre().x;
-    double newY = R1.getCentre().y;
-    newRect.x = newX - R2.getWidth().x/2 - radius * cos(theta);
-    newRect.y = newY - R2.getWidth().y/2 - radius * sin(theta);
+    newP.x = P1.x - Rad * cos(theta);
+    newP.y = P1.y - Rad * sin(theta);
 
-    return newRect;
+    return newP;
 }
 
 // get distance between centre points of two rectangles
-double getRadius(Sprite R1, Sprite R2)
+double getRadius(SDL_Point P1, SDL_Point P2)
 {
     double radius;
 
     // Centre to Centre
     // radius = sqrt(x^2 + y^2)
-    radius = sqrt(   pow( R2.getCentre().x - R1.getCentre().x  ,2)
+    radius = sqrt(   pow( P1.x - P2.x  ,2)
                         +
-                     pow( R2.getCentre().y - R1.getCentre().y  ,2)
+                     pow( P1.y - P2.y  ,2)
                  );
     return radius;
 }
 
-double getTheta(Sprite R1, Sprite R2)
+double getTheta(SDL_Point P1, SDL_Point P2)
 {
     double x, y;
-    x = float( R2.getCentre().x - R1.getCentre().x );
-    y = float( R2.getCentre().y - R1.getCentre().y );
+    x = float( P2.x - P1.x );
+    y = float( P2.y - P1.y );
     double theta = atan2(y,x);
 
 
     return theta;
+}
+
+bool checkCollision(Sprite S1, Sprite S2)
+{
+    bool isCollision = false;
+
+    if( (int)getRadius(S1.getPosition(), S2.getPosition()) < ( S1.getWidth().x/2 + S2.getWidth().x/2 ))
+        isCollision=true;
+
+    return isCollision;
 }
 

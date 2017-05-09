@@ -15,14 +15,12 @@ Bullet::Bullet(int ticks)
 	// change in position per tick (px/tick)
 	Velocity.x = 1;
 	Velocity.y = 1;
-	maxVelocity = 40;
+	maxVelocity = 100;
 
 	// change in velocity per tick (px/tick^2)
 	Acceleration.x = 0;
 	Acceleration.y = 0;
 	maxAcceleration = 5;
-
-	SpRect = {Position.x,Position.y, Width.x, Width.y};
 
 	Colour = {0,0,255};
 

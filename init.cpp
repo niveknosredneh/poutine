@@ -11,7 +11,7 @@ Mix_Music *bgMusic = NULL;
 
 Mix_Chunk *sfx1 = NULL;
 
-extern TTF_Font *gFont24, *gFont16, *gFont12;
+extern TTF_Font *gFont24, *gFont16, *gFont12, *gFont40, *tFont40;
 
 bool init()
 {
@@ -111,15 +111,11 @@ bool loadMedia()
 	}
 
     //Open the font
+    gFont40 = TTF_OpenFont( "Sansation-Bold.ttf", 40 );
 	gFont24 = TTF_OpenFont( "Sansation-Bold.ttf", 24 );
-	if( gFont24 == NULL )
-	{
-		printf( "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError() );
-		success = false;
-	}
-
 	gFont16 = TTF_OpenFont( "Sansation-Bold.ttf", 16 );
 	gFont12 = TTF_OpenFont( "Sansation-Bold.ttf", 12 );
+	tFont40 = TTF_OpenFont( "Blackout-Midnight.ttf", 40);
 
 	return success;
 }

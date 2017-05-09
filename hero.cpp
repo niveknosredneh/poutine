@@ -3,13 +3,18 @@
 
 extern SDL_Rect camera;
 
+extern SDL_Colour cyan;
+
 extern SDL_Renderer* gRenderer;
 
 Hero::Hero()
 {
-    Colour = {0,255,0};
+    Colour = cyan;
     Health = 100;
     ShieldHealth = 25;
+
+    Position.x = SCREEN_WIDTH/2.5;
+    Position.y = SCREEN_HEIGHT/2.5;
 
     bulletTimer = 0; // as to not spam bullets
 
@@ -44,51 +49,55 @@ void Hero::jump()
     }
 }
 
-SDL_Rect flame;
 void Hero::moveLeft()
 {
     Velocity.x--;
-    flame = {Position.x + Width.x/2 - camera.x, Position.y + Width.y/2 - camera.y, 10, 5};
-    SDL_SetRenderDrawColor( gRenderer, 0XFF, 0X00, 0X00, 0xFF );
-    SDL_RenderFillRect( gRenderer, &flame );
+
 
 }
 void Hero::moveRight()
 {
     Velocity.x++;
-    flame = {Position.x - Width.x/2 - camera.x, Position.y + Width.y/2- camera.y, 10, 5};
-    SDL_SetRenderDrawColor( gRenderer, 0XFF, 0X00, 0X00, 0xFF );
-    SDL_RenderFillRect( gRenderer, &flame );
+
 
 }
 void Hero::moveUp()
 {
     Velocity.y--;
-    flame = {Position.x+Width.x/2 - camera.x, Position.y + Width.y/2 - camera.y, 5, 10};
-    SDL_SetRenderDrawColor( gRenderer, 0XFF, 0X00, 0X00, 0xFF );
-    SDL_RenderFillRect( gRenderer, &flame );
 
 }
 void Hero::moveDown()
 {
     Velocity.y++;
-    flame = {Position.x+Width.x/2 - camera.x, Position.y - Width.y/2 - camera.y, 5, 10};
-    SDL_SetRenderDrawColor( gRenderer, 0XFF, 0X00, 0X00, 0xFF );
-    SDL_RenderFillRect( gRenderer, &flame );
 
 }
 
-void Hero::shoot()
+void Hero::shoot(int x, int y)
 {
-    Bullet newBullet(55);
-    newBullet.setColour({0,255,0});
+    Bullet newBullet(300);
+    newBullet.setColour({255,50,50});
     newBullet.setPosition({Position.x,Position.y});
-    newBullet.setVelocity({10,0});
 
+    int newXvel,newYvel;
+
+    double theta = getTheta(Position,{x,y});
+
+
+    newXvel = std::cos(theta) *10 + (getVelocity().x );
+    newYvel = std::sin(theta) *10 + (getVelocity().y );
+    newBullet.setVelocity({newXvel,newYvel});
 
     bullets.push_back(newBullet);
 
 
+}
+
+void Hero::damage(int percent)
+{
+    Health -= percent;
+
+    if(Health<0)
+        mainState=DEATH;
 }
 
 std::vector<Bullet> Hero::getBullets()
@@ -115,7 +124,7 @@ void Hero::renderBullets(int camx, int camy)
         bullets[i].Bullet::update();
 
         unsigned long life = bullets[i].getLifetime();
-        if(life<1 || (bullets[i].getVelocity().x==0 || bullets[i].getVelocity().y==0)) // non moving bullets dissapear too
+        if(life<1)
             bullets.erase(bullets.begin()+i);
         else
         {

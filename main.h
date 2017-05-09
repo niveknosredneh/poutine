@@ -39,15 +39,18 @@
 
 extern std::string DMSG;
 
-enum GameState { MAIN_MENU, LEVEL1, MULTIPLAYER, OPTIONS, QUIT };
+enum GameState { INTRO, MAIN_MENU, LEVEL1, DEATH, MULTIPLAYER, OPTIONS, QUIT };
 
 void menuSelect(int);
-extern short menuSelector;
+
+void focusCamera(int target);
 
 //The window we'll be rendering to
 extern SDL_Window* gWindow;
 
 extern Hero hero1;
+
+extern std::vector<Sprite> planets;
 
 extern GameState mainState;
 

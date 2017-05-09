@@ -24,7 +24,7 @@ class Hero : public Sprite
 		~Hero();
 
         void jump();
-		void shoot();
+		void shoot(int x, int y);
 
 		void moveLeft();
         void moveRight();
@@ -34,6 +34,7 @@ class Hero : public Sprite
 		void renderBullets(int,int);
 
 		double getHealth();
+		void damage(int percent);
 
 
 

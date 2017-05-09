@@ -4,8 +4,26 @@
 bool eventHandler()
 {
 	extern Hero hero1;
+	extern SDL_Rect camera;
+	extern std::vector<Sprite>::size_type cameraTarget;
+	extern Menu mainMenu, optionsMenu;
 
 	const Uint8* currentKeyStates = SDL_GetKeyboardState( NULL );
+	int x, y;
+	Uint32 currentMouseState = SDL_GetMouseState(&x, &y);
+
+	// draws crosshair
+	SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0xFF, 0xFF );
+	SDL_RenderDrawLine(gRenderer,x,y-20,x,y+20);
+	SDL_RenderDrawLine(gRenderer,x-20,y,x+20,y);
+
+	//If mouse event happened
+	if( currentMouseState & SDL_BUTTON(SDL_BUTTON_LEFT))
+    {
+        hero1.shoot(x+camera.x,y+camera.y);
+    }
+
+
 
     // ESCAPE
     if( currentKeyStates[ SDL_SCANCODE_ESCAPE ] )
@@ -23,6 +41,14 @@ bool eventHandler()
 	{
 
 	}
+    if( currentKeyStates[ SDL_SCANCODE_TAB ] )
+	{
+        if(cameraTarget==planets.size()-1)
+        {
+            cameraTarget=-1;
+        }
+        else cameraTarget++;
+	}
 
 
 
@@ -31,7 +57,11 @@ bool eventHandler()
 	{
 	    if(mainState==MAIN_MENU)
         {
-            menuSelect(-1);
+            mainMenu.setMenuSelector(mainMenu.getMenuSelector()-1);
+        }
+        else if(mainState==OPTIONS)
+        {
+            optionsMenu.setMenuSelector(optionsMenu.getMenuSelector()-1);
         }
 		else
             hero1.moveUp();
@@ -40,7 +70,11 @@ bool eventHandler()
 	{
         if(mainState==MAIN_MENU)
         {
-            menuSelect(1);
+            mainMenu.setMenuSelector(mainMenu.getMenuSelector()+1);
+        }
+        else if(mainState==OPTIONS)
+        {
+            optionsMenu.setMenuSelector(optionsMenu.getMenuSelector()+1);
         }
 		else
             hero1.moveDown();
@@ -59,15 +93,28 @@ bool eventHandler()
 
     if( currentKeyStates[ SDL_SCANCODE_SPACE ] )
 	{
-		hero1.shoot();
+
 
 	}
     if( currentKeyStates[ SDL_SCANCODE_RETURN ] )
 	{
-		if(menuSelector==0) mainState = LEVEL1;
-		else if(menuSelector==1) mainState = MULTIPLAYER;
-		else if(menuSelector==2) mainState = OPTIONS;
-		else if(menuSelector==3) mainState = QUIT;
+        if(mainState==MAIN_MENU)
+		{
+            if(mainMenu.getMenuSelector()==0) mainState = LEVEL1;
+            else if(mainMenu.getMenuSelector()==1) mainState = MULTIPLAYER;
+            else if(mainMenu.getMenuSelector()==2) mainState = OPTIONS;
+            else if(mainMenu.getMenuSelector()==3) mainState = QUIT;
+        }
+		if(mainState==DEATH) mainState = MAIN_MENU;
+
+        if(mainState==OPTIONS)
+		{
+            //if(optionsMenu.getMenuSelector()==0) mainState = LEVEL1;
+            //else if(mainMenu.getMenuSelector()==1) mainState = MULTIPLAYER;
+            //else if(mainMenu.getMenuSelector()==2) mainState = OPTIONS;
+            if(optionsMenu.getMenuSelector()==3) mainState = MAIN_MENU;
+        }
+
 
 	}
 
@@ -85,6 +132,16 @@ bool eventHandler()
 
 	}
     if( currentKeyStates[ SDL_SCANCODE_D ] )
+	{
+
+	}
+
+
+    if( currentKeyStates[ SDL_SCANCODE_M ] )
+	{
+        hero1.setPosition({planets[3].getPosition().x-100,planets[3].getPosition().y-100});
+	}
+    if( currentKeyStates[ SDL_SCANCODE_EQUALS ] )
 	{
 
 	}

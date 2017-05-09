@@ -7,9 +7,6 @@ class Sprite
 {
 	protected:
 
-        SDL_Rect lastRect;
-        SDL_Rect SpRect;
-
 		SDL_Point Width;
 		int Depth;  // used for camera multiplier (stars)
 
@@ -37,7 +34,7 @@ class Sprite
 	public:
 		//Initializes variables
 		Sprite();
-		Sprite(int W, int H, SDL_Color, double radius, int period, bool, std::vector<Sprite>::size_type, std::string );
+		Sprite(int W, int mass, SDL_Color, double radius, int period, bool, std::vector<Sprite>::size_type, std::string );
 
 		//Deallocates memory
 		~Sprite();
@@ -51,6 +48,8 @@ class Sprite
 		SDL_Rect getCollision(SDL_Rect*);
 		void unsetCollision();
 		void setCollision();
+
+		void bePulled(Sprite S1, int force);
 
 		SDL_Rect getRect();
 		SDL_Rect getLastRect();
@@ -87,6 +86,7 @@ class Sprite
 		void invertYvelocity();
 
 		int getMass();
+		std::string getlabel();
 };
 
 #endif
