@@ -2,12 +2,11 @@
 #include "sprite.h"
 #include "bullet.h"
 
-
 Bullet::Bullet(int ticks)
 {
 	//Initialize
-	Width.x = 2;
-	Width.y = 2;
+	Width.x = 3;
+	Width.y = 3;
 	Depth = 1; // default
 
 	Mass = 1; // TODO
@@ -22,7 +21,7 @@ Bullet::Bullet(int ticks)
 	Acceleration.y = 0;
 	maxAcceleration = 5;
 
-	Colour = {0,0,255};
+	Colour = {255,0,0};
 
     label = "null";
 	collisionFlag = false;

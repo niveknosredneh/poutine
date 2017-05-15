@@ -5,8 +5,10 @@ class Hero : public Sprite
 {
 	private:
 
+        int R,G,B; // powerups
+
         double Health;
-        double ShieldHealth;
+        double ShieldCharge;
 
         std::vector<Bullet> bullets;
 
@@ -35,7 +37,16 @@ class Hero : public Sprite
 
 		double getHealth();
 		void damage(int percent);
+		void chargeShield();
+		double getShieldCharge();
 
+		void setR(int value);
+		void setG(int value);
+		void setB(int value);
+
+		int getR();
+		int getG();
+		int getB();
 
 
 		std::vector<Bullet> getBullets();

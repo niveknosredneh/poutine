@@ -11,6 +11,17 @@ struct Circle
     int r;
 };
 
+// generic vector
+struct Vect
+{
+    double x, y;
+};
+
+struct Line
+{
+    int x1,y1,x2,y2;
+};
+
 
 SDL_Point changeAngle(SDL_Point P1, SDL_Point P2, double Rad, double changeInDegrees)
 {

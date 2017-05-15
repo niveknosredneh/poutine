@@ -36,6 +36,7 @@
 #include "network.h"
 #include "menu.h"
 #include "mymath.h"
+#include "enemy.h"
 
 extern std::string DMSG;
 
@@ -44,6 +45,8 @@ enum GameState { INTRO, MAIN_MENU, LEVEL1, DEATH, MULTIPLAYER, OPTIONS, QUIT };
 void menuSelect(int);
 
 void focusCamera(int target);
+
+std::string intToHexString(int intVal);
 
 //The window we'll be rendering to
 extern SDL_Window* gWindow;
@@ -55,6 +58,8 @@ extern std::vector<Sprite> planets;
 extern GameState mainState;
 
 extern Texture gTextTexture;
+
+extern Timer fpsTimer;
 
 //The window renderer
 extern SDL_Renderer* gRenderer;

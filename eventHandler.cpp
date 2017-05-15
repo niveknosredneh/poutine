@@ -6,36 +6,49 @@ bool eventHandler()
 	extern Hero hero1;
 	extern SDL_Rect camera;
 	extern std::vector<Sprite>::size_type cameraTarget;
-	extern Menu mainMenu, optionsMenu;
+	extern Menu mainMenu, optionsMenu, quitMenu;
 
 	const Uint8* currentKeyStates = SDL_GetKeyboardState( NULL );
 	int x, y;
 	Uint32 currentMouseState = SDL_GetMouseState(&x, &y);
 
 	// draws crosshair
-	SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0xFF, 0xFF );
-	SDL_RenderDrawLine(gRenderer,x,y-20,x,y+20);
-	SDL_RenderDrawLine(gRenderer,x-20,y,x+20,y);
+	double theta = getTheta({x,y},hero1.getPosition());
+	SDL_SetRenderDrawColor( gRenderer, 0x40, 0x40, 0x40, 0xFF );
+	SDL_RenderDrawLine(gRenderer,x-20*cos(theta),y+20*sin(theta),x+20*cos(theta),y-20*sin(theta));
+	SDL_RenderDrawLine(gRenderer,x-20*sin(theta),y-20*cos(theta),x+20*sin(theta),y+20*cos(theta));
+
+
 
 	//If mouse event happened
 	if( currentMouseState & SDL_BUTTON(SDL_BUTTON_LEFT))
     {
         hero1.shoot(x+camera.x,y+camera.y);
     }
+    //If mouse event happened
+	if( currentMouseState & SDL_BUTTON(SDL_BUTTON_RIGHT))
+    {
+
+    }
+
 
 
 
     // ESCAPE
     if( currentKeyStates[ SDL_SCANCODE_ESCAPE ] )
 	{
-		mainState = MAIN_MENU;
+        SDL_Delay(50);
+        if(mainState == MAIN_MENU) mainState = QUIT;
+		else if(mainState==QUIT) ; // do nothing
+		else mainState = MAIN_MENU;
+
 	}
 
 
 
 	if( currentKeyStates[ SDL_SCANCODE_LCTRL ] )
 	{
-		hero1.jump();
+		hero1.chargeShield();
 	}
 	if( currentKeyStates[ SDL_SCANCODE_LALT ] )
 	{
@@ -55,37 +68,19 @@ bool eventHandler()
     // UP DOWN LEFT RIGHT
 	if( currentKeyStates[ SDL_SCANCODE_UP ] )
 	{
-	    if(mainState==MAIN_MENU)
-        {
-            mainMenu.setMenuSelector(mainMenu.getMenuSelector()-1);
-        }
-        else if(mainState==OPTIONS)
-        {
-            optionsMenu.setMenuSelector(optionsMenu.getMenuSelector()-1);
-        }
-		else
-            hero1.moveUp();
+
 	}
 	if( currentKeyStates[ SDL_SCANCODE_DOWN ] )
 	{
-        if(mainState==MAIN_MENU)
-        {
-            mainMenu.setMenuSelector(mainMenu.getMenuSelector()+1);
-        }
-        else if(mainState==OPTIONS)
-        {
-            optionsMenu.setMenuSelector(optionsMenu.getMenuSelector()+1);
-        }
-		else
-            hero1.moveDown();
+
 	}
 	if( currentKeyStates[ SDL_SCANCODE_LEFT ] )
 	{
-		hero1.moveLeft();
+
 	}
 	if( currentKeyStates[ SDL_SCANCODE_RIGHT ] )
 	{
-		hero1.moveRight();
+
 	}
 
 
@@ -98,6 +93,11 @@ bool eventHandler()
 	}
     if( currentKeyStates[ SDL_SCANCODE_RETURN ] )
 	{
+        if(mainState==QUIT)
+		{
+            if(quitMenu.getMenuSelector()==0) mainState = MAIN_MENU;
+            else if(quitMenu.getMenuSelector()==1) close();
+        }
         if(mainState==MAIN_MENU)
 		{
             if(mainMenu.getMenuSelector()==0) mainState = LEVEL1;
@@ -121,19 +121,25 @@ bool eventHandler()
 
     if( currentKeyStates[ SDL_SCANCODE_W ] )
 	{
-
+	    if(mainState==MAIN_MENU) mainMenu.setMenuSelector(mainMenu.getMenuSelector()-1);
+        else if(mainState==OPTIONS) optionsMenu.setMenuSelector(optionsMenu.getMenuSelector()-1);
+        else if(mainState==QUIT) quitMenu.setMenuSelector(mainMenu.getMenuSelector()-1);
+		else hero1.moveUp();
 	}
     if( currentKeyStates[ SDL_SCANCODE_A ] )
 	{
-
+		hero1.moveLeft();
 	}
     if( currentKeyStates[ SDL_SCANCODE_S ] )
 	{
-
+        if(mainState==MAIN_MENU) mainMenu.setMenuSelector(mainMenu.getMenuSelector()+1);
+        else if(mainState==OPTIONS) optionsMenu.setMenuSelector(optionsMenu.getMenuSelector()+1);
+        else if(mainState==QUIT) quitMenu.setMenuSelector(mainMenu.getMenuSelector()+1);
+		else hero1.moveDown();
 	}
     if( currentKeyStates[ SDL_SCANCODE_D ] )
 	{
-
+		hero1.moveRight();
 	}
 
 

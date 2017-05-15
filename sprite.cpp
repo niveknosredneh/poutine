@@ -2,6 +2,7 @@
 #include "sprite.h"
 
 extern std::vector<Sprite> planets;
+extern Timer fpsTimer;
 
 extern TTF_Font* gFont16;
 extern TTF_Font* gFont12;
@@ -112,12 +113,32 @@ void Sprite::render(int camx, int camy)
         }
         else if(mainState==LEVEL1)
         {
-
             if(Width.x==1) // for stars b/c are only 1px
             {
                 SDL_Rect SpRect = { Position.x - ( camx / Depth), Position.y - ( camy / Depth), Width.x, Width.y };
                 SDL_RenderFillRect( gRenderer, &SpRect );
             }
+
+            if(label!="null")
+            {
+                double theta = getTheta(hero1.getPosition(),Position);
+                double Radius = getRadius(hero1.getPosition(),Position);
+                SDL_SetRenderDrawColor( gRenderer, Colour.r, Colour.g, Colour.b, 0xFF );
+                if(Radius<400)
+                {
+                    SDL_RenderDrawLine(gRenderer, hero1.getPosition().x - camera.x,hero1.getPosition().y  -camera.y , Position.x -camera.x ,Position.y -camera.y);
+                    gTextTexture.loadFromRenderedText("warning!", gFont12, {white.r,white.g,fpsTimer.getTicks() % white.b} );
+                    gTextTexture.render( hero1.getPosition().x+std::cos(theta)*55 -20 -camera.x, hero1.getPosition().y+std::sin(theta)*55 -camera.y);
+                }
+                else if(Radius<10000 && RotatingAround==0 || label == "sun") // draw guide line if planet if close enough, and always for the sun
+                {
+                    SDL_RenderDrawLine(gRenderer,hero1.getPosition().x + std::cos(theta)*250 -camera.x,hero1.getPosition().y + std::sin(theta)*250 -camera.y , hero1.getPosition().x + std::cos(theta)*350 -camera.x , hero1.getPosition().y + std::sin(theta)*350 -camera.y);
+                    gTextTexture.loadFromRenderedText(std::to_string( (int)getRadius(hero1.getPosition(),Position) ) + " - " + label, gFont12, white );
+                    gTextTexture.render( hero1.getPosition().x+std::cos(theta)*300 -camera.x, hero1.getPosition().y+std::sin(theta)*300 -camera.y);
+                }
+            }
+
+
 
             if((Position.x-camx) < SCREEN_WIDTH + Width.x && (Position.x-camx) > -Width.x && (Position.y-camy) < SCREEN_HEIGHT + Width.y && (Position.y-camy) > -Width.y)
                 filledCircleColor(gRenderer, Position.x - camx, Position.y - camy , Width.y*0.5, ((0xff) << 24) + ((Colour.b & 0xff) << 16) + ((Colour.g & 0xff) << 8) + (Colour.r & 0xff));
@@ -128,15 +149,27 @@ void Sprite::render(int camx, int camy)
             }
 
             // trying to do in game mini map
+            // top mini map
             if(Width.y/(miniDivY*6)<1) SDL_RenderDrawPoint(gRenderer, ((getPosition().x)/miniDivX)/6 + 1600, ((getPosition().y)/miniDivY)/6 );
-            else filledCircleColor(gRenderer, ((getPosition().x)/miniDivX)/6 + 1600, ((getPosition().y)/miniDivY)/6 , ((Width.y*0.5)/ miniDivY*1.18)/6, ((0xff) << 24) + ((Colour.b & 0xff) << 16) + ((Colour.g & 0xff) << 8) + (Colour.r & 0xff));
+            else filledCircleColor(gRenderer, ((getPosition().x)/miniDivX)/6 + 1600, ((getPosition().y)/miniDivY)/6 , ((Width.y*0.5)/ miniDivY)/6, ((0xff) << 24) + ((Colour.b & 0xff) << 16) + ((Colour.g & 0xff) << 8) + (Colour.r & 0xff));
+
+            // middle mini map
+            double newMiniDivX = miniDivX / 10;
+            double newMiniDivY = miniDivY / 10;
+
+
+            if( Width.x > 1 && Position.x - camx < newMiniDivX*SCREEN_WIDTH/2 && Position.x - camx > -newMiniDivX*SCREEN_WIDTH/2 && Position.y - camy < newMiniDivY*SCREEN_HEIGHT/2 && Position.y - camy > -newMiniDivY*SCREEN_HEIGHT/2)
+            {
+                if(Width.y/(newMiniDivY)/6<1) SDL_RenderDrawPoint(gRenderer, ((getPosition().x - (camx - newMiniDivX*SCREEN_WIDTH/2))/newMiniDivX)/6 + 1600 , ((getPosition().y - (camy - newMiniDivY*SCREEN_HEIGHT/2))/newMiniDivY)/6 + (LEVEL_HEIGHT/miniDivY)/6  );
+                else filledCircleColor(gRenderer, ((getPosition().x - (camx - newMiniDivX*SCREEN_WIDTH/2))/newMiniDivX)/6 + 1600, ((getPosition().y - (camy - newMiniDivY*SCREEN_HEIGHT/2))/newMiniDivY)/6 + (LEVEL_HEIGHT/miniDivY)/6 , ((Width.y*0.5)/ newMiniDivY)/6, ((0xff) << 24) + ((Colour.b & 0xff) << 16) + ((Colour.g & 0xff) << 8) + (Colour.r & 0xff));
+            }
         }
 
 
 		if(label!="null")
 		{
-            gTextTexture.loadFromRenderedText(label, gFont12, white );
-            if(mainState==MAIN_MENU && RotatingAround==0) gTextTexture.render( Position.x / miniDivX, Position.y / miniDivY); // only planet labels for menu
+            gTextTexture.loadFromRenderedText(label, gFont16, white );
+            if(mainState==MAIN_MENU && RotatingAround==0) gTextTexture.render( Position.x / miniDivX - 15, Position.y / miniDivY +5); // only planet labels for menu
             else if (mainState == LEVEL1) gTextTexture.render( Position.x - sizeof(label) - camx, Position.y - 15 - camy - 15); // render all for in game
 		}
 

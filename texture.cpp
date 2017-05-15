@@ -8,6 +8,8 @@ Texture::Texture()
 	texture = NULL;
 	Width = 0;
 	Height = 0;
+
+	Timeout = 100;
 }
 
 Texture::~Texture()
@@ -87,6 +89,8 @@ bool Texture::loadFromRenderedText( std::string textureText, TTF_Font* font, SDL
 		SDL_FreeSurface( textSurface );
 	}
 
+    if(Timeout==0) texture=NULL;
+
 	//Return success
 	return texture != NULL;
 }
@@ -119,6 +123,11 @@ void Texture::setAlpha( Uint8 alpha )
 {
 	//Modulate texture alpha
 	SDL_SetTextureAlphaMod( texture, alpha );
+}
+
+void Texture::setTimeout( int time)
+{
+    Timeout = time;
 }
 
 void Texture::render( int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip )
