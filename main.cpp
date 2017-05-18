@@ -23,7 +23,12 @@ const int SCREEN_HEIGHT = 1080;
 const int LEVEL_WIDTH = 350000;
 const int LEVEL_HEIGHT = 350000;
 
-double ZOOMx = 2;
+const double SCREEN_RATIO = SCREEN_HEIGHT/SCREEN_WIDTH;
+
+const double miniDivX = LEVEL_WIDTH /SCREEN_WIDTH;
+const double miniDivY = LEVEL_HEIGHT /SCREEN_HEIGHT;
+
+double ZOOMx = 1.0;
 
 SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 std::vector<Sprite>::size_type cameraTarget = -1;
@@ -66,7 +71,7 @@ TTF_Font *tFont40 = NULL;
 //Rendered texture
 Texture gTextTexture;
 
-int main( int argc, char* args[] )
+int main( int argc, char *argv[])
 {
 	//Start up SDL and create window
 	if( !init() ) {	printf( "Failed to initialize!" ); }
@@ -266,18 +271,37 @@ int main( int argc, char* args[] )
 
                 // renders stars and minimap for gameplay
                 // renders all stars
-                for (std::vector<Sprite>::size_type i = 0; i < stars1.size(); i++) stars1[i].render(camera.x,camera.y);
+                for (std::vector<Sprite>::size_type i = 0; i < stars1.size(); i++) stars1[i].render(1,1,false,0,0);
 
-                // creates mini map boundary
+                // begin mini map creation
                 SDL_SetRenderDrawColor( gRenderer, 0XFF, 0XFF, 0XFF, 0xFF );
                 SDL_Rect newRect = {5*SCREEN_WIDTH/6 - 2, 0 , SCREEN_WIDTH/6 + 4, SCREEN_HEIGHT/3 + 6};
                 SDL_RenderFillRect( gRenderer, &newRect );
+
                 SDL_SetRenderDrawColor( gRenderer, 0X00, 0X00, 0X00, 0xFF );
-                newRect = {5*SCREEN_WIDTH/6, 2 , SCREEN_WIDTH/6 - 2, SCREEN_HEIGHT/6};
-                SDL_RenderFillRect( gRenderer, &newRect ); // map1
-                newRect = {5*SCREEN_WIDTH/6, SCREEN_HEIGHT/6 + 4 , SCREEN_WIDTH/6 - 2, SCREEN_HEIGHT/6};
-                SDL_RenderFillRect( gRenderer, &newRect ); // map2
-                // end mini map boundary
+                newRect = {5*SCREEN_WIDTH/6, SCREEN_HEIGHT/6 + 4 , SCREEN_WIDTH/6 - 2, SCREEN_HEIGHT/6}; // map2
+                SDL_RenderFillRect( gRenderer, &newRect );
+                for (std::vector<Sprite>::size_type i = 0; i < sprites.size(); i++)
+                {
+                    if( sprites[i].getPosition().x - camera.x < (miniDivX/10)*SCREEN_WIDTH/2 && sprites[i].getPosition().x - camera.x > -(miniDivX/10)*SCREEN_WIDTH/2 && sprites[i].getPosition().y - camera.y < (miniDivY/10)*SCREEN_HEIGHT/2 && sprites[i].getPosition().y - camera.y > -(miniDivY/10)*SCREEN_HEIGHT/2)
+                    {
+                        sprites[i].render(6*miniDivX/10,1,false,1760,SCREEN_HEIGHT/4);
+                    }
+                }
+                SDL_Rect miniCam;
+                miniCam.x = 1760;
+                miniCam.y = SCREEN_HEIGHT/4;
+                miniCam.w = camera.w/(6*miniDivX/10);
+                miniCam.h = camera.h/(6*miniDivY/10);
+                SDL_SetRenderDrawColor( gRenderer, 0XFF, 0X00, 0X00, 0xFF );
+                SDL_RenderDrawRect(gRenderer,&miniCam);
+
+                SDL_SetRenderDrawColor( gRenderer, 0X00, 0X00, 0X00, 0xFF );
+                newRect = {5*SCREEN_WIDTH/6, 2 , SCREEN_WIDTH/6 - 2, SCREEN_HEIGHT/6}; // map1
+                SDL_RenderFillRect( gRenderer, &newRect );
+                for (std::vector<Sprite>::size_type i = 0; i < sprites.size(); i++) sprites[i].render(miniDivX*6,false,false,1600,0);
+                // end mini map section
+
 
                 // update sprites
                 hero1.update();
@@ -291,7 +315,7 @@ int main( int argc, char* args[] )
 
                 }
 
-                hero1.Sprite::render(camera.x, camera.y);
+                hero1.Sprite::render(1.0,1,false,0,0);
                 hero1.renderBullets(camera.x,camera.y);
 
                 // START HUD
@@ -355,7 +379,7 @@ int main( int argc, char* args[] )
                 if(checkCollision(hero1,asteroids2[i])==true)
                     hero1.damage(15);
 
-                asteroids1[i].render(camera.x,camera.y);
+                asteroids1[i].render(1.0,1,false,0,0);
             }
             for (std::vector<Sprite>::size_type i = 0; i < asteroids2.size(); i++)
             {
@@ -363,7 +387,7 @@ int main( int argc, char* args[] )
                 if(checkCollision(hero1,asteroids2[i])==true)
                     hero1.damage(15);
 
-                asteroids2[i].render(camera.x,camera.y);
+                asteroids2[i].render(1.0,1,false,0,0);
             }
 
             // planets
@@ -383,7 +407,7 @@ int main( int argc, char* args[] )
                     hero1.setVelocity({0,0});
                     hero1.damage(50);
                 }
-                planets[i].render(camera.x,camera.y);
+                planets[i].render(1,1,true,0,0);
             }
 
 
@@ -405,6 +429,13 @@ int main( int argc, char* args[] )
                 SDL_Delay(30);
 
                 mainMenu.render();
+
+                for (std::vector<Sprite>::size_type i = 0; i < sprites.size(); i++)
+                {
+                    sprites[i].render( miniDivX,0,false,0,0);
+                    if(sprites[i].getlabel()!="sun") sprites[i].update();
+
+                }
 
             }
 
@@ -475,6 +506,8 @@ int main( int argc, char* args[] )
                 gTextTexture.render( 10, 70 );
                 gTextTexture.loadFromRenderedText( "camera: " + std::to_string(camera.x) + "," + std::to_string(camera.y), gFont12,  blue );
                 gTextTexture.render( 10, 85 );
+                gTextTexture.loadFromRenderedText( std::to_string(miniDivY), gFont12,  blue );
+                gTextTexture.render( 10, 100 );
             }
             // END DEBUG HUD section --->
 

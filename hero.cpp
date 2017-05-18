@@ -7,6 +7,8 @@ extern SDL_Colour darkgray;
 
 extern SDL_Renderer* gRenderer;
 
+extern double ZOOMx;
+
 Hero::Hero()
 {
     R = 15;
@@ -174,7 +176,7 @@ void Hero::renderBullets(int camx, int camy)
             bullets.erase(bullets.begin()+i);
         else
         {
-            bullets[i].render(camx,camy);
+            bullets[i].render(1,1,false,0,0);
 
         }
     }

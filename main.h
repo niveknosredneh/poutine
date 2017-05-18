@@ -6,7 +6,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL2_gfxPrimitives.h>
+#include "SDL2_gfxPrimitives.h"
 #include <SDL2/SDL_net.h>
 
 #include <stdio.h>
@@ -68,8 +68,13 @@ extern SDL_Renderer* gRenderer;
 extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
 
+extern const double SCREEN_RATIO;
+
 extern const int LEVEL_WIDTH;
 extern const int LEVEL_HEIGHT;
+
+extern const double miniDivX;
+extern const double miniDivY;
 
 int main( int argc, char* args[] );
 

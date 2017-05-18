@@ -119,25 +119,25 @@ bool eventHandler()
 	}
 
 
-    if( currentKeyStates[ SDL_SCANCODE_W ] )
+    if( currentKeyStates[ SDL_SCANCODE_W ] || currentKeyStates[ SDL_SCANCODE_UP ])
 	{
 	    if(mainState==MAIN_MENU) mainMenu.setMenuSelector(mainMenu.getMenuSelector()-1);
         else if(mainState==OPTIONS) optionsMenu.setMenuSelector(optionsMenu.getMenuSelector()-1);
         else if(mainState==QUIT) quitMenu.setMenuSelector(mainMenu.getMenuSelector()-1);
 		else hero1.moveUp();
 	}
-    if( currentKeyStates[ SDL_SCANCODE_A ] )
+    if( currentKeyStates[ SDL_SCANCODE_A ] || currentKeyStates[ SDL_SCANCODE_LEFT ])
 	{
 		hero1.moveLeft();
 	}
-    if( currentKeyStates[ SDL_SCANCODE_S ] )
+    if( currentKeyStates[ SDL_SCANCODE_S ] || currentKeyStates[ SDL_SCANCODE_DOWN ] )
 	{
         if(mainState==MAIN_MENU) mainMenu.setMenuSelector(mainMenu.getMenuSelector()+1);
         else if(mainState==OPTIONS) optionsMenu.setMenuSelector(optionsMenu.getMenuSelector()+1);
         else if(mainState==QUIT) quitMenu.setMenuSelector(mainMenu.getMenuSelector()+1);
 		else hero1.moveDown();
 	}
-    if( currentKeyStates[ SDL_SCANCODE_D ] )
+    if( currentKeyStates[ SDL_SCANCODE_D ] || currentKeyStates[ SDL_SCANCODE_RIGHT ])
 	{
 		hero1.moveRight();
 	}

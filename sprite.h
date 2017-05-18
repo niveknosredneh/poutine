@@ -41,7 +41,7 @@ class Sprite
 
 		void update();
 
-		void render(int,int);
+		void render(double,bool,bool,int,int);
 
 		bool checkCollision(SDL_Rect*);
 		void collisionResponse(SDL_Rect);
