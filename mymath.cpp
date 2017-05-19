@@ -23,6 +23,41 @@ struct Line
 };
 
 
+// Midpoint circle algorithm using lines to fill
+// to have unfilled, draw individual points at each of the line points
+// https://en.wikipedia.org/wiki/Midpoint_circle_algorithm
+void DrawCircle(int x0,int y0,int r,SDL_Colour colour)
+{
+
+    SDL_SetRenderDrawColor( gRenderer, colour.r, colour.g, colour.b, 0xFF );
+
+    int x = r;
+    int y = 0;
+    int err = 0;
+
+    while (x >= y)
+    {
+
+        SDL_RenderDrawLine(gRenderer, x0 + x, y0 + y, x0 - x, y0 + y);
+        SDL_RenderDrawLine(gRenderer, x0 + y, y0 + x, x0 - y, y0 + x);
+        SDL_RenderDrawLine(gRenderer, x0 - x, y0 - y, x0 + x, y0 - y);
+        SDL_RenderDrawLine(gRenderer, x0 + y, y0 - x, x0 - y, y0 - x);
+
+        y += 1;
+        if (err <= 0)
+        {
+            err += 2*y + 1;
+        }
+        if (err > 0)
+        {
+            x -= 1;
+            err -= 2*x + 1;
+        }
+    }
+
+}
+
+
 SDL_Point changeAngle(SDL_Point P1, SDL_Point P2, double Rad, double changeInDegrees)
 {
     SDL_Point newP;

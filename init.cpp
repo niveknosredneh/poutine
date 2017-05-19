@@ -96,7 +96,7 @@ bool loadMedia()
 	bool success = true;
 
 	//Load music
-	bgMusic = Mix_LoadMUS( "03 Bonobo - Cirrus.mp3" );
+	bgMusic = Mix_LoadMUS( "intro.ogg" );
 	if( bgMusic == NULL )
 	{
 		printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );

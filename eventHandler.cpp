@@ -5,6 +5,7 @@ bool eventHandler()
 {
 	extern Hero hero1;
 	extern SDL_Rect camera;
+	extern double ZOOMx;
 	extern std::vector<Sprite>::size_type cameraTarget;
 	extern Menu mainMenu, optionsMenu, quitMenu;
 
@@ -14,7 +15,7 @@ bool eventHandler()
 
 	// draws crosshair
 	double theta = getTheta({x,y},hero1.getPosition());
-	SDL_SetRenderDrawColor( gRenderer, 0x40, 0x40, 0x40, 0xFF );
+	SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
 	SDL_RenderDrawLine(gRenderer,x-20*cos(theta),y+20*sin(theta),x+20*cos(theta),y-20*sin(theta));
 	SDL_RenderDrawLine(gRenderer,x-20*sin(theta),y-20*cos(theta),x+20*sin(theta),y+20*cos(theta));
 
@@ -149,9 +150,12 @@ bool eventHandler()
 	}
     if( currentKeyStates[ SDL_SCANCODE_EQUALS ] )
 	{
-
+        ZOOMx++;
 	}
-
+    if( currentKeyStates[ SDL_SCANCODE_MINUS ] )
+	{
+        ZOOMx--;
+	}
 	// Function keys
     if( currentKeyStates[ SDL_SCANCODE_F10 ] )
 	{

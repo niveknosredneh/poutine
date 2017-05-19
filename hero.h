@@ -7,6 +7,8 @@ class Hero : public Sprite
 
         int R,G,B; // powerups
 
+        std::vector<Bullet> Rvector, Gvector,Bvector;
+
         double Health;
         double ShieldCharge;
 

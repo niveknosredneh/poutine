@@ -99,7 +99,7 @@ void Sprite::update()
 }
 
 // used to render all sprites
-void Sprite::render(double zoomX, bool follows, bool printLabel, int xOffset, int yOffset)
+void Sprite::render(double zoomX, bool follows, bool ignoreConditions, int xOffset, int yOffset)
 {
     SDL_SetRenderDrawColor( gRenderer, Colour.r, Colour.g, Colour.b, 0xFF );
 
@@ -108,11 +108,25 @@ void Sprite::render(double zoomX, bool follows, bool printLabel, int xOffset, in
     else zoomY = zoomX*miniDivY/miniDivX;
     int followsCam = follows;
 
-    if(Width.x*0.5/zoomX<=1)
+    if(ignoreConditions || Position.x - Width.x - camera.x / Depth > -20 && Position.x - Width.x - camera.x  / Depth < SCREEN_WIDTH + 20 && Position.y - Width.y - camera.y  / Depth > -20 && Position.y - Width.y - camera.y  / Depth < SCREEN_HEIGHT + 20 )
     {
-        SDL_RenderDrawPoint(gRenderer, ( (Position.x - ( camera.x * followsCam / Depth)) / zoomX) + xOffset, ( (Position.y - ( camera.y * followsCam  / Depth)) / zoomY) + yOffset);
+        if(Width.x*0.5/zoomX<=1)
+        {
+            SDL_RenderDrawPoint(gRenderer, ( (Position.x - ( camera.x * followsCam / Depth)) / zoomX) + xOffset, ( (Position.y - ( camera.y * followsCam  / Depth)) / zoomY) + yOffset);
+        }
+
+        else DrawCircle( ( (Position.x  - ( camera.x * followsCam  / Depth)) / zoomX) + xOffset, ( (Position.y - ( camera.y * followsCam  / Depth)) / zoomY) + yOffset, (Width.x*0.5/zoomX), Colour);
+        //else filledCircleColor(gRenderer, ( (Position.x  - ( camera.x * followsCam  / Depth)) / zoomX) + xOffset, ( (Position.y - ( camera.y * followsCam  / Depth)) / zoomY) + yOffset, (Width.x*0.5/zoomX), ((0xff) << 24) + ((Colour.b & 0xff) << 16) + ((Colour.g & 0xff) << 8) + (Colour.r & 0xff));
     }
-    else filledCircleColor(gRenderer, ( (Position.x  - ( camera.x * followsCam  / Depth)) / zoomX) + xOffset, ( (Position.y - ( camera.y * followsCam  / Depth)) / zoomY) + yOffset, (Width.x*0.5/zoomX), ((0xff) << 24) + ((Colour.b & 0xff) << 16) + ((Colour.g & 0xff) << 8) + (Colour.r & 0xff));
+}
+
+void Sprite::renderLabel(double zoom, TTF_Font* font,SDL_Colour labelColour)
+{
+    double zoomy;
+    if(zoom!=1) zoomy = zoom*miniDivY/miniDivX;
+    else zoomy = 1;
+    gTextTexture.loadFromRenderedText(label,font,labelColour);
+    gTextTexture.render(Position.x/zoom - camera.x,Position.y/zoomy - camera.y);
 }
 
 

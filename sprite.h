@@ -42,6 +42,8 @@ class Sprite
 		void update();
 
 		void render(double,bool,bool,int,int);
+		void renderLabel(double, TTF_Font* font,SDL_Colour);
+        void renderLabel(double, TTF_Font* font);
 
 		bool checkCollision(SDL_Rect*);
 		void collisionResponse(SDL_Rect);

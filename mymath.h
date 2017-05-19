@@ -1,6 +1,7 @@
 #ifndef MYMATH_H
 #define MYMATH_H
 
+void DrawCircle(int x,int y,int r, SDL_Colour);
 double getRadius(SDL_Point,SDL_Point);
 double getTheta(SDL_Point,SDL_Point);
 SDL_Point moveOnAngle(SDL_Point, double distance, double theta);

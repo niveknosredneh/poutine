@@ -135,7 +135,7 @@ double Hero::getShieldCharge()
 
 void Hero::chargeShield()
 {
-    if(ShieldCharge < G) ShieldCharge+=3;
+    if(ShieldCharge < G) ShieldCharge+=5;
 
 }
 
@@ -153,12 +153,12 @@ void Hero::renderBullets(int camx, int camy)
 {
     if(ShieldCharge>0)
     {
-        if(ShieldCharge>1) ShieldCharge-=2; else if(ShieldCharge<2) ShieldCharge=0; // deplete shield naturally
+        if(ShieldCharge>1) ShieldCharge-=3; else if(ShieldCharge<3) ShieldCharge=0; // deplete shield naturally
         // render shield particles
         SDL_SetRenderDrawColor(gRenderer,0,63 + 3*ShieldCharge/4,0,255);
         for(int i = -ShieldCharge;i <= ShieldCharge;i++)
         {
-            SDL_RenderDrawPoint(gRenderer,hero1.getPosition().x + (rand() % (int)(256/ShieldCharge) + 10 )*cos(i) - camera.x, hero1.getPosition().y + (rand() % (int)(256/ShieldCharge) + 10 )*sin(i) - camera.y);
+            SDL_RenderDrawPoint(gRenderer,hero1.getPosition().x + (rand() % 5 + 10 )*cos(i) - camera.x, hero1.getPosition().y + (rand() % 5 + 10 )*sin(i) - camera.y);
         }
     }
 
